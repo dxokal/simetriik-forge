@@ -8,10 +8,10 @@ description: Instancie le dossier de conception Lumière (docs/, api/, AGENTS.md
 Point de départ de la démarche : copier le gabarit, le personnaliser.
 
 1. Vérifier que le dossier courant ne contient pas déjà `docs/` ou `AGENTS.md`. Si oui, **s'arrêter** et le signaler (ne jamais écraser).
-2. Poser, une question à la fois : nom du projet, institution cliente, chef de projet, date de démarrage, stack (Python/FastAPI, TS/Next.js, Java).
+2. Poser, une question à la fois : nom du projet, institution cliente, chef de projet, date de démarrage. Ne **pas** demander la stack : c'est une décision d'architecture (étape 3).
 3. Racine du plugin = deux niveaux au-dessus du dossier de ce `SKILL.md` (résoudre les liens symboliques ; `${CLAUDE_PLUGIN_ROOT}` sous Claude Code). Copier sans écraser : `cp -rn <racine>/templates/. .` puis `mkdir -p scripts && cp -n <racine>/scripts/*.sh scripts/` (les garde-fous `scripts/check-*.sh` citées par les autres skills, réutilisables en CI).
 4. Remplacer `[NOM DU PROJET]`, `[INSTITUTION]`, `[NOM]`, `[JJ/MM/AAAA]` dans `README.md` et `api/openapi.yaml` ; laisser les autres placeholders pour les étapes suivantes.
 5. Créer `CLAUDE.md` contenant `@AGENTS.md` si absent.
-6. Annoncer la suite : `forge-cadrage` (vision + impact map).
+6. Annoncer la suite : `forge-cadrage` (vision + impact map). Préciser : « La stack sera décidée à l'étape `forge-architecture` par un ADR. »
 
 Règles : ne rien inventer (demander), pas de `git push`, pas de commit sans demande.
