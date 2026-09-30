@@ -1,0 +1,5 @@
+paths:
+  /a:
+    post:
+      operationId: op1
+      summary: Fantome (SPEC-009)
