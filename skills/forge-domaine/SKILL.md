@@ -12,3 +12,5 @@ description: Modélise le domaine (étape 1) : compte rendu d'Event Storming, gl
 5. Vérifier qu'aucun terme n'apparaît sous deux noms dans les docs existants.
 
 Suite : `forge-spec` par fonctionnalité, `forge-architecture` en parallèle.
+
+Terminer en lançant `scripts/forge-progress.sh` et en affichant sa sortie (barre de progression sur les 7 étapes).

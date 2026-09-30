@@ -17,3 +17,5 @@ Pas de code sans spec `Validée`. Ce skill produit la spec, il n'implémente rie
 6. Vérifier : `scripts/check-spec-validated.sh docs/02-specs/SPEC-NNN.md`. Ce script ne contrôle **que le statut**, pas le contenu : avant de proposer « Validée », relire que les sections 1 à 5 sont renseignées, sans placeholder `[...]` ni question ouverte bloquante, et que le `.feature` couvre chaque règle.
 
 Suite : `forge-contrat` puis `forge-implemente`.
+
+Terminer en lançant `scripts/forge-progress.sh` et en affichant sa sortie (barre de progression sur les 7 étapes).

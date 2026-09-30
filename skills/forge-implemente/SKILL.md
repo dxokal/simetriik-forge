@@ -21,3 +21,5 @@ description: Implémente une spec validée en respectant glossaire, ADR, contrat
 ## Avant de conclure
 - Lancer linter + tests du projet, puis `scripts/check-glossary-terms.sh docs/01-domaine/glossaire.md <dossier-code>` (FF-05).
 - Ne jamais affaiblir un test pour le faire passer. Pas de commit/push sans demande (voir `/branche`, `/livre`).
+
+Terminer en lançant `scripts/forge-progress.sh` et en affichant sa sortie (barre de progression sur les 7 étapes).
