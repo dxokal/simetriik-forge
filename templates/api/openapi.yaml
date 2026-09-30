@@ -1,0 +1,54 @@
+# Contrat d'API — modifié AVANT l'implémentation
+openapi: 3.1.0
+info:
+  title: "[Nom du projet] API"
+  version: 0.1.0
+  description: API du monolithe modulaire. Montants en XOF (entiers).
+servers:
+  - url: https://api.preprod.example.bj/v1
+paths:
+  /applications:
+    post:
+      operationId: submitApplication
+      summary: Soumettre une demande (SPEC-001)
+      tags: [instruction]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ApplicationInput" }
+      responses:
+        "201":
+          description: Demande soumise
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Application" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+components:
+  schemas:
+    ApplicationInput:
+      type: object
+      required: [serviceCode, documents]
+      properties:
+        serviceCode: { type: string, example: "PERMIS-CONSTRUIRE" }
+        documents:
+          type: array
+          items: { type: string, format: uuid }
+    Application:
+      type: object
+      properties:
+        reference: { type: string, pattern: "^DEM-\\d{4}-\\d{5}$", example: "DEM-2026-00042" }
+        status: { type: string, enum: [SUBMITTED, PAYMENT_PENDING, UNDER_REVIEW, APPROVED, REJECTED] }
+        feeAmountXof: { type: integer, minimum: 0, example: 5000 }
+        submittedAt: { type: string, format: date-time }
+  responses:
+    ValidationError:
+      description: Données invalides
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            properties:
+              type: { type: string }
+              title: { type: string }
+              errors: { type: array, items: { type: object } }
