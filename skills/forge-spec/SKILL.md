@@ -14,6 +14,6 @@ Pas de code sans spec `Validée`. Ce skill produit la spec, il n'implémente rie
    - Montants en FCFA entiers ; termes du glossaire uniquement (ajouter les nouveaux termes au glossaire avec leur nom technique anglais).
 4. Écrire `docs/02-specs/features/SPEC-NNN.feature` (Gherkin français) : 1 `Règle` par règle métier, au moins un cas nominal, un cas limite, un cas d'erreur.
 5. Passer le statut à `En revue` ; demander la validation métier puis tech. Seul l'humain passe à `Validée` (renseigner nom + date).
-6. Vérifier : `scripts/check-spec-validated.sh docs/02-specs/SPEC-NNN.md`.
+6. Vérifier : `scripts/check-spec-validated.sh docs/02-specs/SPEC-NNN.md`. Ce script ne contrôle **que le statut**, pas le contenu : avant de proposer « Validée », relire que les sections 1 à 5 sont renseignées, sans placeholder `[...]` ni question ouverte bloquante, et que le `.feature` couvre chaque règle.
 
 Suite : `forge-contrat` puis `forge-implemente`.
