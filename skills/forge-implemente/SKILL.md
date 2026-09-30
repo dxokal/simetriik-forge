@@ -6,6 +6,7 @@ description: Implémente une spec validée en respectant glossaire, ADR, contrat
 # forge-implemente
 
 ## Garde-fous (bloquants, avant d'écrire du code)
+0. `scripts/check-branch.sh` → si KO : créer une branche `feat/…` ou `fix/…` (jamais de code sur `main`).
 1. `scripts/check-spec-validated.sh docs/02-specs/SPEC-NNN.md` → si KO : **s'arrêter** et le dire.
 2. Lire glossaire, ADR au statut `Acceptée`, `docs/01-domaine/context-map.md`.
 3. Le contrat `api/openapi.yaml` couvre la spec (`operationId` cité) ; sinon passer par `forge-contrat` d'abord.
@@ -20,6 +21,7 @@ description: Implémente une spec validée en respectant glossaire, ADR, contrat
 
 ## Avant de conclure
 - Lancer linter + tests du projet, puis `scripts/check-glossary-terms.sh docs/01-domaine/glossaire.md <dossier-code>` (FF-05).
-- Ne jamais affaiblir un test pour le faire passer. Pas de commit/push sans demande Une branche par lot (`feat/…`, `fix/…`), commits Conventional Commits..
+- Ne jamais affaiblir un test pour le faire passer. Pas de commit/push sans demande.
+- Un commit = un sujet ; message en anglais, vérifié par `scripts/check-commit-msg.sh` (Conventional Commits). Le corps du commit cite `SPEC-NNN`.
 
 Terminer en lançant `scripts/forge-progress.sh` et en affichant sa sortie (barre de progression sur les 7 étapes).

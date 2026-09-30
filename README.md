@@ -22,5 +22,7 @@ Dans un projet vide : lancer `forge-init`, puis suivre `forge-statut`.
 
 Chaque skill se termine par `scripts/forge-progress.sh` : barre de progression sur les 7 étapes (0 à 6), ex. `Progression [███░░░░] 3/7 · étape en cours : Architecture · suite : forge-contrat`.
 
+Rigueur Git : `scripts/check-branch.sh` (pas de code sur `main`, branches `feat/`·`fix/`) et `scripts/check-commit-msg.sh` (Conventional Commits), utilisables en hook `commit-msg` ou en CI.
+
 ## Tests
 `bash tests/run.sh` (garde-fous uniquement ; les skills sont des instructions, à éprouver sur un projet réel).

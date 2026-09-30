@@ -24,6 +24,13 @@ ko scripts/check-openapi-first.sh $F/api-ghost.yaml $F/specs
 ok scripts/check-adr-present.sh $T/03-architecture/adr
 mkdir -p $F/adr-empty && cp $T/03-architecture/adr/0000-template.md $F/adr-empty/
 ko scripts/check-adr-present.sh $F/adr-empty
+ok scripts/check-branch.sh feat/x
+ok scripts/check-branch.sh fix/y
+ko scripts/check-branch.sh main
+ko scripts/check-branch.sh feat/
+echo 'feat(api): add login' > $F/msg-ok.txt; echo 'added stuff' > $F/msg-bad.txt
+ok scripts/check-commit-msg.sh $F/msg-ok.txt
+ko scripts/check-commit-msg.sh $F/msg-bad.txt
 P=$F/proj; rm -rf $P; mkdir -p $P/docs/00-cadrage
 [ "$(scripts/forge-progress.sh $P)" = "Progression [░░░░░░░] 0/7 · étape en cours : Cadrage · suite : forge-cadrage" ] || { echo "FAIL progress 0/7"; fail=1; }
 printf 'Statut : Validée\n' > $P/docs/00-cadrage/vision.md; cp $P/docs/00-cadrage/vision.md $P/docs/00-cadrage/impact-map.md
