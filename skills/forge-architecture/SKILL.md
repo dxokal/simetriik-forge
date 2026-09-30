@@ -13,3 +13,5 @@ description: Décide et documente l'architecture (étape 3) : modèle C4 en Stru
 6. Garde-fou : `scripts/check-adr-present.sh docs/03-architecture/adr`.
 
 Suite : `forge-contrat`, `forge-implemente`. Modifier la CI ou Docker : demander confirmation.
+
+Terminer en lançant `scripts/forge-progress.sh` et en affichant sa sortie (barre de progression sur les 7 étapes).

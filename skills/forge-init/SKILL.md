@@ -15,3 +15,5 @@ Point de départ de la démarche : copier le gabarit, le personnaliser.
 6. Annoncer la suite : `forge-cadrage` (vision + impact map).
 
 Règles : ne rien inventer (demander), pas de `git push`, pas de commit sans demande.
+
+Terminer en lançant `scripts/forge-progress.sh` et en affichant sa sortie (barre de progression sur les 7 étapes).

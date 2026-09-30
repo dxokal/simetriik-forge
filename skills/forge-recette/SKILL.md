@@ -13,3 +13,5 @@ description: Prépare la recette (étape 5) : dérive les scénarios de recette 
 6. Un bug trouvé en recette : enquêter avec `/investigue`, corriger via `forge-implemente`, rejouer le scénario.
 
 Suite : `forge-prod`.
+
+Terminer en lançant `scripts/forge-progress.sh` et en affichant sa sortie (barre de progression sur les 7 étapes).

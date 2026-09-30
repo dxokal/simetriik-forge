@@ -14,3 +14,5 @@ Objectif : que chaque future fonctionnalité remonte à un objectif mesurable.
 5. Statut `En revue` ; la validation revient au sponsor client.
 
 Suite : `forge-domaine`. (Pour un PRD formel : `/cadre`.)
+
+Terminer en lançant `scripts/forge-progress.sh` et en affichant sa sortie (barre de progression sur les 7 étapes).

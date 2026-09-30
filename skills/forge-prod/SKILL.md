@@ -15,3 +15,5 @@ Produit `docs/06-production/{plan-deploiement,runbook,rollback,plan-monitoring}.
 6. **Confirmation explicite avant** : toute modification CI/CD, Docker, `.env`, migration ou donnée de production, `git push`, appel à un service payant. Ce skill rédige et prépare ; il n'exécute jamais un déploiement de production de lui-même.
 
 Clôture : revue post-production, puis retour à `forge-cadrage` pour le lot suivant.
+
+Terminer en lançant `scripts/forge-progress.sh` et en affichant sa sortie (barre de progression sur les 7 étapes).

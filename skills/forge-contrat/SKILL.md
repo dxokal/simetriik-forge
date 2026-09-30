@@ -15,3 +15,5 @@ Le contrat précède le code (règle de `AGENTS.md`).
 6. Le contrat est la base du test FF-04 (Schemathesis) ; rappeler de le brancher en CI.
 
 Suite : `forge-implemente`.
+
+Terminer en lançant `scripts/forge-progress.sh` et en affichant sa sortie (barre de progression sur les 7 étapes).

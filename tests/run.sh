@@ -24,4 +24,8 @@ ko scripts/check-openapi-first.sh $F/api-ghost.yaml $F/specs
 ok scripts/check-adr-present.sh $T/03-architecture/adr
 mkdir -p $F/adr-empty && cp $T/03-architecture/adr/0000-template.md $F/adr-empty/
 ko scripts/check-adr-present.sh $F/adr-empty
+P=$F/proj; rm -rf $P; mkdir -p $P/docs/00-cadrage
+[ "$(scripts/forge-progress.sh $P)" = "Progression [░░░░░░░] 0/7 · étape en cours : Cadrage · suite : forge-cadrage" ] || { echo "FAIL progress 0/7"; fail=1; }
+printf 'Statut : Validée\n' > $P/docs/00-cadrage/vision.md; cp $P/docs/00-cadrage/vision.md $P/docs/00-cadrage/impact-map.md
+scripts/forge-progress.sh $P | grep -q '1/7 · étape en cours : Domaine' || { echo "FAIL progress 1/7"; fail=1; }
 [ $fail -eq 0 ] && echo "tous les tests passent"; exit $fail
