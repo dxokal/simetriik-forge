@@ -17,6 +17,7 @@ pas écrite ici n'existe pas.
 | 3. Architecture | `docs/03-architecture/` | C4 + ADR + fitness functions | Tech lead / DSI client |
 | 4. Livrables client | `docs/04-livrables-client/` | Dossier formel (UML/Merise si exigé) | Comité de pilotage |
 | 5. Recette | `docs/05-recette/` | Plan et PV de recette | Client |
+| 6. Mise en production | `docs/06-production/` | Plan de déploiement, runbook, rollback, monitoring | Client (DSI) |
 
 Contrats d'API : `api/openapi.yaml`. Consignes pour les agents IA : `AGENTS.md`.
 
