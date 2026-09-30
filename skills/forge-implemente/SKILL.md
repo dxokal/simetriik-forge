@@ -6,7 +6,7 @@ description: Implémente une spec validée en respectant glossaire, ADR, contrat
 # forge-implemente
 
 ## Garde-fous (bloquants, avant d'écrire du code)
-0. `scripts/check-branch.sh` → si KO : créer une branche `feat/…` ou `fix/…` (jamais de code sur `main`).
+0. `scripts/check-branch.sh` → si KO : créer une branche `feat/SPEC-NNN-slug` (ex. `feat/SPEC-003-login`) ou `fix/…` ; jamais de code sur `main`. Le hook pre-commit (`scripts/install-hooks.sh`) s'appuie sur ce nommage.
 1. `scripts/check-spec-validated.sh docs/02-specs/SPEC-NNN.md` → si KO : **s'arrêter** et le dire.
 2. Lire glossaire, ADR au statut `Acceptée`, `docs/01-domaine/context-map.md`.
 3. Le contrat `api/openapi.yaml` couvre la spec (`operationId` cité) ; sinon passer par `forge-contrat` d'abord.

@@ -14,6 +14,8 @@ Point de départ de la démarche : copier le gabarit, le personnaliser.
 5. Créer `CLAUDE.md` contenant `@AGENTS.md` si absent.
 6. Annoncer la suite : `forge-cadrage` (vision + impact map). Préciser : « La stack sera décidée à l'étape `forge-architecture` par un ADR. »
 
+Proposer (sans l'imposer, sur confirmation) `scripts/install-hooks.sh` : hooks Git refusant le code sans spec `Validée`.
+
 Règles : ne rien inventer (demander), pas de `git push`, pas de commit sans demande.
 
 Terminer en lançant `scripts/forge-progress.sh` et en affichant sa sortie (barre de progression sur les 7 étapes).
