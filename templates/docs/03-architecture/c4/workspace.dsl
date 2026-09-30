@@ -13,9 +13,9 @@ workspace "[Nom du projet]" "Architecture C4 — Simetriik Solutions" {
         iam = softwareSystem "Keycloak" "Identité et accès" "External"
 
         system = softwareSystem "[Nom du système]" {
-            web = container "Application web" "Interface usagers et agents" "Next.js / TypeScript"
-            mobile = container "Application mobile" "Saisie terrain hors ligne" "React Native"
-            api = container "API (monolithe modulaire)" "Règles métier, un module par bounded context" "FastAPI / Python" {
+            web = container "Application web" "Interface usagers et agents" "[STACK : à fixer par ADR]"
+            mobile = container "Application mobile" "Saisie terrain hors ligne" "[STACK : à fixer par ADR]"
+            api = container "API (monolithe modulaire)" "Règles métier, un module par bounded context" "[STACK : à fixer par ADR]" {
                 instruction = component "Module Instruction" "Contexte cœur"
                 notification = component "Module Notifications" "Contexte support"
                 paymentAcl = component "ACL Paiement" "Couche anticorruption"
