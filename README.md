@@ -24,5 +24,7 @@ Chaque skill se termine par `scripts/forge-progress.sh` : barre de progression s
 
 Rigueur Git : `scripts/check-branch.sh` (pas de code sur `main`, branches `feat/`·`fix/`) et `scripts/check-commit-msg.sh` (Conventional Commits), utilisables en hook `commit-msg` ou en CI.
 
+Hook pre-commit (opt-in, `scripts/install-hooks.sh`) : sur `feat/SPEC-NNN-slug`, tout commit de code est refusé tant que la spec n'est pas `Validée` ; les commits docs-only et les branches `fix/` passent. Contournable par `--no-verify` : seule une CI serveur rendrait la règle absolue.
+
 ## Tests
 `bash tests/run.sh` (garde-fous uniquement ; les skills sont des instructions, à éprouver sur un projet réel).

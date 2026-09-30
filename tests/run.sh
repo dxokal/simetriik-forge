@@ -35,4 +35,13 @@ P=$F/proj; rm -rf $P; mkdir -p $P/docs/00-cadrage
 [ "$(scripts/forge-progress.sh $P)" = "Progression [░░░░░░░] 0/7 · étape en cours : Cadrage · suite : forge-cadrage" ] || { echo "FAIL progress 0/7"; fail=1; }
 printf 'Statut : Validée\n' > $P/docs/00-cadrage/vision.md; cp $P/docs/00-cadrage/vision.md $P/docs/00-cadrage/impact-map.md
 scripts/forge-progress.sh $P | grep -q '1/7 · étape en cours : Domaine' || { echo "FAIL progress 1/7"; fail=1; }
+G=$(mktemp -d); R=$PWD; ( cd $G && git init -q && mkdir -p docs/02-specs scripts src && cp $R/scripts/check-*.sh scripts/ && git config user.email t@t && git config user.name t
+  cp $R/$F/spec-draft.md docs/02-specs/SPEC-001.md; echo x > src/a.ts
+  git switch -q -c feat/SPEC-001-x; git add src/a.ts
+  scripts/check-commit-allowed.sh 2>/dev/null && { echo "FAIL hook: spec brouillon + code"; exit 1; }
+  git reset -q; git add docs/02-specs/SPEC-001.md; scripts/check-commit-allowed.sh >/dev/null 2>&1 || { echo "FAIL hook: docs-only"; exit 1; }
+  cp $R/$F/spec-ok.md docs/02-specs/SPEC-001.md; git reset -q; git add src/a.ts; scripts/check-commit-allowed.sh >/dev/null 2>&1 || { echo "FAIL hook: spec validee"; exit 1; }
+  git switch -q -c feat/sans-spec; scripts/check-commit-allowed.sh 2>/dev/null && { echo "FAIL hook: feat sans SPEC"; exit 1; }
+  git switch -q -c fix/y; scripts/check-commit-allowed.sh >/dev/null 2>&1 || { echo "FAIL hook: fix/"; exit 1; }
+  $R/scripts/install-hooks.sh >/dev/null 2>&1 && [ -x .git/hooks/pre-commit ] && ! $R/scripts/install-hooks.sh >/dev/null 2>&1 ) || fail=1; rm -rf $G
 [ $fail -eq 0 ] && echo "tous les tests passent"; exit $fail
