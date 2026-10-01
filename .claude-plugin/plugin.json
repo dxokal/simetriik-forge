@@ -1,6 +1,6 @@
 {
   "name": "simetriik-forge",
   "description": "Pratiquer la démarche Lumière (cadrage → spec → code → recette → production) avec des garde-fous déterministes.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": { "name": "Simetriik Solutions" }
 }
