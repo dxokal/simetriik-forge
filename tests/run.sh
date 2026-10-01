@@ -52,4 +52,10 @@ G=$(mktemp -d); R=$PWD; ( cd $G && git init -q -b main && git config user.email 
   rm -r db; sed -i 's/| S |/| M |/' docs/02-specs/SPEC-001.md; $R/scripts/check-rapide-eligible.sh docs/02-specs/SPEC-001.md >/dev/null 2>&1 && { echo "FAIL rapide: taille M"; exit 1; }
   sed -i 's/| M |/| S |/' docs/02-specs/SPEC-001.md; for i in 1 2 3 4 5 6 7 8 9; do echo $i > src/f$i.ts; done; $R/scripts/check-rapide-eligible.sh docs/02-specs/SPEC-001.md >/dev/null 2>&1 && { echo "FAIL rapide: trop de fichiers"; exit 1; }
   exit 0 ) || fail=1; rm -rf $G
+L=$F/lecons; rm -rf $L; mkdir -p $L/apprentissage/code $L/apprentissage/adr
+[ "$(scripts/forge-lecons.sh $L)" = "Leçons [░░░░] 0/4 · prochaine : 01-impact-map" ] || { echo "FAIL lecons 0/4"; fail=1; }
+printf 'indicateur cible échéance\n' > $L/apprentissage/impact-map.md; cp $F/spec-ok.md $L/apprentissage/SPEC-001.md
+printf '| a | b |\n|---|---|\n| Acheteur | d | c | Buyer | client | e |\n' > $L/apprentissage/glossaire.md; echo 'class Client {}' > $L/apprentissage/code/o.ts
+scripts/forge-lecons.sh $L | grep -q '2/4 · prochaine : 02-langage' || { echo "FAIL lecons 2/4"; fail=1; }
+rm -rf $L
 [ $fail -eq 0 ] && echo "tous les tests passent"; exit $fail
