@@ -1,0 +1,46 @@
+\chapter{Prise en main}
+\section{Installation}
+\begin{itemize}
+  \item \textbf{Claude Code} : \cmd{claude --plugin-dir /chemin/vers/simetriik-forge}.
+  \item \textbf{Codex et OpenCode} : lancer \cmd{./install.sh} (liens symboliques dans \cmd{~/.agents/skills}), puis redémarrer l'outil si les skills n'apparaissent pas.
+\end{itemize}
+Les skills s'invoquent par leur nom, par exemple \cmd{/simetriik-forge:forge-init} sous Claude Code.
+
+\section{Démarrer un projet : \texttt{forge-init}}
+Dans un dossier vide, lancez \cmd{forge-init}. Le skill :
+\begin{enumerate}
+  \item vérifie qu'il n'existe pas déjà de \cmd{docs/} ni de \cmd{AGENTS.md} (il n'écrase jamais) ;
+  \item vous pose quatre questions, une à la fois : nom du projet, institution cliente, chef de projet, date de démarrage ;
+  \item copie le dossier de conception (\cmd{docs/}, \cmd{api/}, \cmd{AGENTS.md}, \cmd{.github/}) et les scripts de garde-fou dans \cmd{scripts/} ;
+  \item remplace les marqueurs \cmd{[NOM DU PROJET]}, \cmd{[INSTITUTION]}, \cmd{[NOM]}, \cmd{[JJ/MM/AAAA]} ;
+  \item crée \cmd{CLAUDE.md} contenant \cmd{@AGENTS.md} ;
+  \item annonce la suite : \cmd{forge-cadrage}.
+\end{enumerate}
+\astuce{La stack technique n'est \emph{pas} demandée à l'initialisation : c'est une décision d'architecture, prise à l'étape~3 par un ADR, à partir du cadrage et du domaine.}
+
+\section{Structure du dossier de conception}
+\begin{lstlisting}
+docs/00-cadrage/        vision, impact map
+docs/01-domaine/        event storming, glossaire, context map
+docs/02-specs/          SPEC-NNN.md, features/*.feature, exigences non fonctionnelles
+docs/03-architecture/   adr/, c4/workspace.dsl, fitness-functions.md
+docs/04-livrables-client/
+docs/05-recette/        plan-recette.md
+docs/06-production/     deploiement, runbook, rollback, monitoring
+api/openapi.yaml        contrat d'API
+AGENTS.md               consignes pour les assistants de code
+\end{lstlisting}
+
+\section{Suivre sa progression}
+Deux outils, tous deux en lecture seule :
+\begin{itemize}
+  \item \cmd{forge-statut} : tableau de bord complet (état de chaque étape et de chaque spec, garde-fous en échec) et \emph{une seule} prochaine action recommandée.
+  \item \cmd{scripts/forge-progress.sh} : barre de progression sur les sept étapes, affichée à la fin de chaque skill, par exemple
+\par\smallskip{\small\cmd{Progression [███░░░░] 3/7 · étape en cours : Architecture · suite : forge-contrat}}\par
+\end{itemize}
+Une étape compte comme faite lorsque son livrable est au statut \emph{Validée} (ADR : \emph{Acceptée}).
+Pour l'architecture, la barre exige au moins deux ADR acceptés (l'ADR-0001 du monolithe modulaire et l'ADR de stack).
+
+\section{Les statuts}
+Brouillon $\rightarrow$ En revue $\rightarrow$ \textbf{Validée}. Seul un humain passe un livrable à \emph{Validée} (en indiquant son nom et la date).
+\source{skills/forge-init, forge-statut}
