@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg">
+    <img src="assets/logo.svg" alt="Simetriik Forge" width="128">
+  </picture>
+</p>
+
 # simetriik-forge
 
 Plugin pour pratiquer la démarche du dossier Lumière, du besoin à la mise en production, avec des garde-fous déterministes (`scripts/`).

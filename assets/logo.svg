@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Simetriik Forge">
+  <title>Simetriik Forge</title>
+  <g transform="translate(0 27)" fill="#1F4E79">
+    <path d="M40 168 Q100 150 140 150 H372 Q412 150 472 168 Q440 205 372 212 H140 Q72 205 40 168 Z"/>
+    <path d="M190 212 H322 L300 300 H212 Z"/>
+    <path d="M150 300 H362 L392 370 H120 Z"/>
+    <rect x="120" y="370" width="272" height="34" rx="6"/>
+  </g>
+  <path transform="translate(0 27)" fill="#5B9BD5" d="M256 54 L267 86 L299 98 L267 110 L256 142 L245 110 L213 98 L245 86 Z"/>
+</svg>
