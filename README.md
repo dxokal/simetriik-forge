@@ -12,6 +12,7 @@ Plugin pour pratiquer la démarche du dossier Lumière, du besoin à la mise en 
 | Code | `forge-implemente` |
 | 5 Recette | `forge-recette` |
 | 6 Production | `forge-prod` |
+| Petite fonctionnalité (cycle court) | `forge-rapide` |
 | Suivi | `forge-statut` |
 
 ## Installation
