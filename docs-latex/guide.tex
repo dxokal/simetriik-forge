@@ -1,0 +1,38 @@
+\documentclass[11pt,a4paper,oneside]{book}
+\usepackage{fontspec}
+\setmonofont{DejaVu Sans Mono}[Scale=MatchLowercase]
+\usepackage[french]{babel}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{xcolor,listings,booktabs,tabularx,enumitem,fancyhdr,titlesec,tikz}
+\usepackage[hidelinks,plainpages=false,hypertexnames=false]{hyperref}
+\usetikzlibrary{shapes.geometric,arrows.meta,positioning}
+\emergencystretch=4em\sloppy
+\definecolor{accent}{HTML}{1F4E79}
+\definecolor{codebg}{HTML}{F4F6F8}
+\lstset{basicstyle=\ttfamily\small,backgroundcolor=\color{codebg},frame=single,
+  rulecolor=\color{accent!30},breaklines=true,columns=fixed,keepspaces=true,
+  literate={é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {à}{{\`a}}1 {É}{{\'E}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {ù}{{\`u}}1 {ç}{{\c c}}1 {…}{{...}}1 {→}{{->}}1}
+\titleformat{\chapter}{\Huge\bfseries\color{accent}}{\thechapter}{0.6em}{}
+\pagestyle{fancy}\fancyhf{}\fancyhead[L]{\small Simetriik Forge}\fancyhead[R]{\small\leftmark}\fancyfoot[C]{\thepage}
+\newcommand{\cmd}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\source}[1]{\par\noindent{\small\itshape Source : \texttt{\detokenize{#1}} --- à mettre à jour avec le skill.}\par\medskip}
+\newcommand{\astuce}[1]{\par\medskip\noindent\fcolorbox{accent}{accent!6}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{\textbf{À retenir.} #1}}\par\medskip}
+\title{\textbf{Simetriik Forge}\\[0.4em]\large Guide de l'ingénieur : pratiquer la démarche Lumière\\du besoin à la mise en production}
+\author{Simetriik Solutions}
+\date{\today}
+\begin{document}
+\frontmatter
+\maketitle
+{\small\tableofcontents}
+\mainmatter
+\input{chapitres/01-demarche}
+\input{chapitres/02-prise-en-main}
+\input{chapitres/03-etapes}
+\input{chapitres/04-cycle-court}
+\input{chapitres/05-git}
+\input{chapitres/06-apprentissage}
+\appendix
+\input{chapitres/a1-reference}
+\input{chapitres/a2-glossaire}
+\input{chapitres/a3-depannage}
+\end{document}

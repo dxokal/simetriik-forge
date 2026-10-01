@@ -1,0 +1,46 @@
+\chapter{Pourquoi cette démarche}
+\section{Le problème}
+Un projet logiciel dérape rarement à cause du code : il dérape parce qu'on construit
+la mauvaise chose, qu'on se comprend mal, ou qu'on décide trop tôt sans le dire.
+La démarche Lumière répond à ces trois risques par une chaîne d'étapes courtes, chacune
+produisant un livrable \emph{validé par un humain} avant que la suivante ne commence.
+
+Le plugin \textbf{Simetriik Forge} met cette démarche en pratique avec un assistant de code.
+Il apporte deux choses : des \emph{skills} (instructions que l'assistant suit pour chaque étape)
+et des \emph{garde-fous} (petits scripts qui échouent quand une règle est violée).
+
+\section{Les principes}
+\begin{itemize}[itemsep=2pt]
+  \item \textbf{Pas de code sans spécification validée.} La validation est humaine ; l'assistant ne valide jamais à votre place.
+  \item \textbf{Chaque fonctionnalité remonte à un objectif mesurable} (impact map).
+  \item \textbf{Un terme = une définition = un nom technique} (langage omniprésent).
+  \item \textbf{Le contrat d'API précède le code} (OpenAPI d'abord).
+  \item \textbf{Les décisions structurantes sont consignées} dans des ADR, y compris le choix de la stack technique.
+  \item \textbf{Les règles automatisables sont automatisées} : les scripts de \texttt{scripts/} les vérifient, en local et en CI.
+\end{itemize}
+
+\section{Les sept étapes}
+\begin{center}
+\begin{tikzpicture}[node distance=4mm,
+  st/.style={draw=accent,fill=accent!8,rounded corners,minimum width=2.1cm,minimum height=9mm,align=center,font=\small},
+  ar/.style={-{Stealth},thick,accent}]
+  \node[st] (a) {0\\Cadrage};
+  \node[st,right=of a] (b) {1\\Domaine};
+  \node[st,right=of b] (c) {2\\Specs};
+  \node[st,right=of c] (d) {3\\Archi.};
+  \draw[ar] (a)--(b); \draw[ar] (b)--(c); \draw[ar] (c)--(d);
+  \node[st,below=7mm of a] (e) {4\\Contrat};
+  \node[st,right=of e] (f) {5\\Recette};
+  \node[st,right=of f] (g) {6\\Production};
+  \draw[ar] (d.south) -- ++(0,-3mm) -| ([yshift=4mm]e.north) -- (e.north);
+  \draw[ar] (e)--(f); \draw[ar] (f)--(g);
+\end{tikzpicture}
+\end{center}
+La mise en œuvre du code (skill \cmd{forge-implemente}) se situe entre le contrat et la recette.
+Après la production, on revient au cadrage pour le lot suivant.
+
+\section{Ce que le plugin ne fait pas}
+Il ne déploie jamais en production de lui-même, ne valide aucune spécification, ne pousse
+aucun code sans demande et n'invente aucune règle métier : quand une information manque,
+il pose la question.
+\source{README.md}
