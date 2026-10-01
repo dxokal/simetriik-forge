@@ -18,6 +18,7 @@ Plugin pour pratiquer la démarche du dossier Lumière, du besoin à la mise en 
 
 ## Installation
 - **Claude Code** : `claude --plugin-dir /chemin/vers/simetriik-forge`
+- **Claude Code via marketplace** (dépôt accessible à l'utilisateur) : `claude plugin marketplace add dxokal/simetriik-forge` puis `claude plugin install simetriik-forge@simetriik`.
 - **Codex et OpenCode** : `./install.sh` (liens symboliques dans `~/.agents/skills`, lu par les deux). Redémarrer l'outil si les skills n'apparaissent pas.
 
 Dans un projet vide : lancer `forge-init`, puis suivre `forge-statut`.
