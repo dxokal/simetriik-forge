@@ -5,7 +5,7 @@ description: Rédige une spécification fonctionnelle (docs/02-specs/SPEC-NNN.md
 
 # forge-spec
 
-Pas de code sans spec `Validée`. Ce skill produit la spec, il n'implémente rien.
+Pas de code sans spec `Validée`. Ce skill produit la spec, il n'implémente rien. Petite fonctionnalité (une règle, ni dépendance ni migration) : utiliser `forge-rapide`.
 
 1. Lire `docs/01-domaine/glossaire.md` (vocabulaire exact), `docs/00-cadrage/impact-map.md` (objectif `O#` lié) et `docs/02-specs/_TEMPLATE-spec.md`.
 2. Numéroter : prochain `SPEC-NNN` libre. Copier le gabarit en `docs/02-specs/SPEC-NNN.md`, statut `Brouillon`.

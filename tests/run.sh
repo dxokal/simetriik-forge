@@ -44,4 +44,12 @@ G=$(mktemp -d); R=$PWD; ( cd $G && git init -q && mkdir -p docs/02-specs scripts
   git switch -q -c feat/sans-spec; scripts/check-commit-allowed.sh 2>/dev/null && { echo "FAIL hook: feat sans SPEC"; exit 1; }
   git switch -q -c fix/y; scripts/check-commit-allowed.sh >/dev/null 2>&1 || { echo "FAIL hook: fix/"; exit 1; }
   $R/scripts/install-hooks.sh >/dev/null 2>&1 && [ -x .git/hooks/pre-commit ] && ! $R/scripts/install-hooks.sh >/dev/null 2>&1 ) || fail=1; rm -rf $G
+G=$(mktemp -d); R=$PWD; ( cd $G && git init -q -b main && git config user.email t@t && git config user.name t && mkdir -p docs/02-specs src
+  printf '| Champ | Valeur |\n|---|---|\n| Taille | S |\n' > docs/02-specs/SPEC-001.md; echo a > src/a.ts; git add . && git commit -qm "chore: init" && git switch -q -c feat/SPEC-001-x
+  $R/scripts/check-rapide-eligible.sh docs/02-specs/SPEC-001.md >/dev/null 2>&1 || { echo "FAIL rapide: petit travail"; exit 1; }
+  echo '{}' > package.json; $R/scripts/check-rapide-eligible.sh docs/02-specs/SPEC-001.md >/dev/null 2>&1 && { echo "FAIL rapide: dependances"; exit 1; }
+  rm package.json; mkdir db && echo x > db/001.sql; $R/scripts/check-rapide-eligible.sh docs/02-specs/SPEC-001.md >/dev/null 2>&1 && { echo "FAIL rapide: migration"; exit 1; }
+  rm -r db; sed -i 's/| S |/| M |/' docs/02-specs/SPEC-001.md; $R/scripts/check-rapide-eligible.sh docs/02-specs/SPEC-001.md >/dev/null 2>&1 && { echo "FAIL rapide: taille M"; exit 1; }
+  sed -i 's/| M |/| S |/' docs/02-specs/SPEC-001.md; for i in 1 2 3 4 5 6 7 8 9; do echo $i > src/f$i.ts; done; $R/scripts/check-rapide-eligible.sh docs/02-specs/SPEC-001.md >/dev/null 2>&1 && { echo "FAIL rapide: trop de fichiers"; exit 1; }
+  exit 0 ) || fail=1; rm -rf $G
 [ $fail -eq 0 ] && echo "tous les tests passent"; exit $fail
