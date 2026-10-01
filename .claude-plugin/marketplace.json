@@ -1,0 +1,12 @@
+{
+  "name": "simetriik",
+  "description": "Plugins Simetriik Solutions",
+  "owner": { "name": "Simetriik Solutions" },
+  "plugins": [
+    {
+      "name": "simetriik-forge",
+      "source": "./",
+      "description": "Pratiquer la démarche Lumière (cadrage → spec → code → recette → production) avec des garde-fous déterministes."
+    }
+  ]
+}
