@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Usage : forge-progress.sh [racine-projet] — barre de progression sur les 7 étapes (0 à 6), lecture seule.
 # Une étape est faite quand son livrable est au statut « Validée » (ADR : « Acceptée »).
+here="$(cd "$(dirname "$0")" && pwd)"
 cd "${1:-.}" || exit 2
-here="$(dirname "$0")"
 valide() { head -12 "$1" 2>/dev/null | grep -qE '^Statut[^|]*(Validée|Acceptée)|^\| *Statut *\|.*\*\*Validée\*\*' ; }
 tous() { local n=0 f; for f in "$@"; do [ -f "$f" ] || return 1; valide "$f" || return 1; n=$((n+1)); done; [ $n -gt 0 ]; }
 adr=$(grep -l '^Statut : Acceptée' docs/03-architecture/adr/[0-9]*.md 2>/dev/null | grep -vc '/0000-')
