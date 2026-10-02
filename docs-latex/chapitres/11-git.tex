@@ -73,7 +73,19 @@ Une branche \cmd{feat/} sans \cmd{SPEC-NNN} est refusée avec le nommage attendu
 
 \begin{piege}[Piège : contourner et oublier]
 Avec les hooks installés, tout commit sur \cmd{main} est refusé, y compris de documentation. Et \cmd{git commit --no-verify}
-contourne le hook : seule une CI côté serveur rendrait la règle absolue. Si vous contournez, c'est un choix assumé et dit.
+contourne le hook : seule la CI côté serveur rend la règle absolue (section suivante). Si vous contournez, c'est un choix assumé et dit.
+\end{piege}
+
+\section{La CI : rendre la règle absolue}
+Un hook local se contourne (\cmd{--no-verify}). Le gabarit embarque donc \cmd{.github/workflows/forge.yml}, qui lance sur chaque pull request \cmd{scripts/check-ci.sh}. Ce script rejoue côté serveur :
+\begin{itemize}
+  \item le nom de la branche et les messages de tous ses commits ;
+  \item la spec nommée dans la branche, \emph{Validée} avec nom et date, dès que du code change ;
+  \item au moins deux ADR \emph{Acceptée} (ADR-0001 et stack) ;
+  \item le contrat d'API rattaché à des specs validées et le glossaire dans le code.
+\end{itemize}
+\begin{piege}[Réglage à faire à la main]
+Le workflow n'est contraignant que si le dépôt exige ce contrôle \emph{et} une revue humaine avant fusion sur \cmd{main}. C'est un réglage de la plateforme, que le plugin ne peut pas faire pour vous. Comme toute modification de CI/CD, \skill{forge-init} vous demande confirmation avant de conserver le fichier.
 \end{piege}
 
 \section{Les pull requests}
@@ -89,10 +101,10 @@ Installez les hooks sur un dépôt d'essai. Essayez de committer un fichier de c
 \begin{itemize}
   \item Une branche par sujet ; jamais de code sur \cmd{main}.
   \item Conventional Commits en anglais, citant \cmd{SPEC-NNN}.
-  \item Les hooks sont locaux et contournables : la CI serveur est le filet final.
+  \item Les hooks sont locaux et contournables : la CI (\cmd{check-ci.sh}) est le filet final, avec une revue obligatoire.
 \end{itemize}
 \end{retenir}
-\source{scripts/check-branch.sh, check-commit-msg.sh, check-commit-allowed.sh, install-hooks.sh}
+\source{scripts/check-branch.sh, check-commit-msg.sh, check-commit-allowed.sh, install-hooks.sh, check-ci.sh, templates/.github/workflows/forge.yml}
 
 \begin{acquis}
   \item Quels commits le hook \emph{pre-commit} laisse-t-il toujours passer ?

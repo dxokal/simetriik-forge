@@ -151,7 +151,7 @@ modules =
     app.payment_acl
 \end{Verbatim}
 \end{code}
-\textbf{Garde-fou :} \cmd{scripts/check-adr-present.sh docs/03-architecture/adr}. Il vérifie qu'au moins un ADR est \emph{Acceptée} ;
+\textbf{Garde-fou :} \cmd{scripts/check-adr-present.sh docs/03-architecture/adr 2}. Le second argument est le nombre minimum d'ADR \emph{Acceptée} (2 : l'ADR-0001 fourni et l'ADR de stack ; par défaut, 1). Le script
 il ne lit pas la qualité de l'argumentation.
 
 \begin{vousjouez}[À vous de jouer]

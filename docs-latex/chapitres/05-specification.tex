@@ -129,7 +129,14 @@ $ scripts/check-spec-validated.sh docs/02-specs/SPEC-001.md
 OK: docs/02-specs/SPEC-001.md est Validée
 \end{Verbatim}
 \end{code}
-Le second résultat n'apparaît qu'après qu'un humain a écrit \textbf{Validée} (avec nom et date) dans le tableau d'en-tête.
+Le second résultat n'apparaît qu'après qu'un humain a écrit \textbf{Validée} dans le tableau d'en-tête \emph{et} renseigné chaque ligne \cmd{Validé par} avec un nom et une date. Un placeholder \cmd{[Nom, date]} ou une ligne absente est refusé :
+\begin{code}
+\begin{Verbatim}
+KO: docs/02-specs/SPEC-001.md est « Validée » sans validation humaine nommée et datée :
+  - Validé par (tech)
+\end{Verbatim}
+\end{code}
+Ce contrôle rend la validation visible en relecture ; il ne prouve pas qu'un humain l'a faite. Seule la revue de pull request obligatoire (chapitre~\ref{ch:git}) le garantit.
 
 \begin{retenir}[Avant de proposer « Validée », relisez cette liste]
 \begin{itemize}
@@ -149,13 +156,13 @@ Choisissez la première fonctionnalité de votre projet. Écrivez deux règles m
 \begin{itemize}
   \item Pas de code sans spec \emph{Validée}, et la validation est humaine.
   \item Règle $\Rightarrow$ source ; règle sans source $\Rightarrow$ question ouverte.
-  \item Le script contrôle le statut ; la complétude se relit.
+  \item Le script contrôle le statut et la validation nommée et datée ; la complétude se relit.
 \end{itemize}
 \end{retenir}
 \source{skills/forge-spec/SKILL.md, templates/docs/02-specs}
 
 \begin{acquis}
   \item Qu'écrit le skill quand une règle métier manque ?
-  \item Que contrôle exactement \cmd{check-spec-validated.sh} ?
+  \item Que contrôle exactement \cmd{check-spec-validated.sh}, et que ne contrôle-t-il pas ?
   \item Combien de scénarios minimum par règle, et de quels types ?
 \end{acquis}

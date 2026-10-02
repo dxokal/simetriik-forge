@@ -14,7 +14,7 @@ Point de départ de la démarche : copier le gabarit, le personnaliser.
 5. Créer `CLAUDE.md` contenant `@AGENTS.md` si absent.
 6. Annoncer la suite : `forge-cadrage` (vision + impact map). Préciser : « La stack sera décidée à l'étape `forge-architecture` par un ADR. »
 
-Proposer (sans l'imposer, sur confirmation) `scripts/install-hooks.sh` : hooks Git refusant le code sans spec `Validée`.
+Proposer (sans l'imposer, sur confirmation) `scripts/install-hooks.sh` : hooks Git refusant le code sans spec `Validée`. Le gabarit contient aussi `.github/workflows/forge.yml` (CI qui lance `scripts/check-ci.sh`) : c'est une configuration CI, demander confirmation avant de la conserver, et rappeler d'exiger ce contrôle et une revue humaine avant fusion sur `main` (réglage du dépôt, à faire à la main).
 
 Règles : ne rien inventer (demander), pas de `git push`, pas de commit sans demande.
 
