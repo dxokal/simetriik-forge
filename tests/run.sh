@@ -4,10 +4,20 @@ cd "$(dirname "$0")/.." || exit 1
 T=templates/docs; F=tests/fixtures; fail=0
 ok()  { "$@" >/dev/null 2>&1 || { echo "FAIL (attendu OK): $*"; fail=1; }; }
 ko()  { "$@" >/dev/null 2>&1 && { echo "FAIL (attendu KO): $*"; fail=1; }; }
-printf '| Champ | Valeur |\n|---|---|\n| Statut | **Validée** |\n' > $F/spec-ok.md
+printf '| Champ | Valeur |\n|---|---|\n| Statut | **Validée** |\n| Validé par | Afi Houngbo, 12/03/2026 |\n' > $F/spec-ok.md
 printf '| Champ | Valeur |\n|---|---|\n| Statut | Brouillon |\n' > $F/spec-draft.md
 ok scripts/check-spec-validated.sh $F/spec-ok.md
 ko scripts/check-spec-validated.sh $F/spec-draft.md
+printf '| Statut | **Validée** |\n' > $F/spec-noby.md
+printf '| Statut | **Validée** |\n| Validé par | [Nom, date] |\n' > $F/spec-placeholder.md
+printf '| Statut | **Validée** |\n| Validé par | Afi Houngbo |\n' > $F/spec-nodate.md
+printf '| Statut | **Validée** |\n| Validé par (métier) | Afi Houngbo, 12/03/2026 |\n| Validé par (tech) | [Nom, date] |\n' > $F/spec-halfby.md
+printf '| Statut | **Validée** |\n| Validé par (métier) | Afi Houngbo, 12/03/2026 |\n| Validé par (tech) | Kossi Adjovi, 2026-03-13 |\n' > $F/spec-twoby.md
+ko scripts/check-spec-validated.sh $F/spec-noby.md
+ko scripts/check-spec-validated.sh $F/spec-placeholder.md
+ko scripts/check-spec-validated.sh $F/spec-nodate.md
+ko scripts/check-spec-validated.sh $F/spec-halfby.md
+ok scripts/check-spec-validated.sh $F/spec-twoby.md
 ko scripts/check-spec-validated.sh $T/02-specs/_TEMPLATE-spec.md
 mkdir -p $F/code-ok $F/code-bad
 echo 'class Application {}' > $F/code-ok/a.ts
