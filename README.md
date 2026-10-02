@@ -37,7 +37,7 @@ Rigueur Git : `scripts/check-branch.sh` (pas de code sur `main`, branches `feat/
 Hook pre-commit (opt-in, `scripts/install-hooks.sh`) : sur `feat/SPEC-NNN-slug`, tout commit de code est refusé tant que la spec n'est pas `Validée` ; les commits docs-only et les branches `fix/` passent. Contournable par `--no-verify` : seule une CI serveur rendrait la règle absolue.
 
 ## Documentation
-Guide de l'ingénieur en LaTeX : `make -C docs-latex` (XeLaTeX, PDF dans `docs-latex/build/guide.pdf`). Chaque chapitre indique le skill source à garder synchronisé.
+Manuel de l'ingénieur en LaTeX (KOMA-Script, fil rouge « Sika ») : `make -C docs-latex` (XeLaTeX, PDF dans `docs-latex/build/guide.pdf`). Chaque chapitre indique le skill source à garder synchronisé.
 
 ## Tests
 `bash tests/run.sh` (garde-fous uniquement ; les skills sont des instructions, à éprouver sur un projet réel).

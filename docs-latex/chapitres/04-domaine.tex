@@ -1,0 +1,170 @@
+\chapter{Comprendre le domaine}\label{ch:domaine}
+
+\begin{objectifs}[Objectifs --- étape 1, \texttt{forge-domaine}]
+\begin{itemize}
+  \item mener ou restituer un Event Storming et repérer les points chauds ;
+  \item écrire un glossaire où chaque terme a une définition et un nom technique uniques ;
+  \item classer les sous-domaines et dessiner une context map ;
+  \item faire respecter le vocabulaire par un script, pas par la bonne volonté.
+\end{itemize}
+\end{objectifs}
+
+\begin{situation}[Sur le terrain : \sika{}]
+Atelier d'une demi-journée avec la trésorière générale et trois trésorières de groupe. Au bout d'une
+heure, un désaccord surgit : pour l'une, \q{le pot} est la somme collectée ; pour l'autre, c'est la
+remise elle-même ; une troisième dit \q{la cagnotte}. Si le code nomme \cmd{Pot}, \cmd{Jackpot} et
+\cmd{Fund} trois choses identiques, le bogue est déjà écrit.
+\end{situation}
+
+\section{Event Storming : voir le métier se dérouler}
+\begin{concept}[Event Storming]
+Un atelier où le métier et la technique posent sur un mur, dans l'ordre chronologique, les
+\emph{événements} qui se produisent (au participe passé : \q{Cotisation confirmée}), puis les
+commandes qui les déclenchent, les acteurs, les politiques (\q{dès que\dots, alors\dots}), les systèmes
+externes et, en rouge, les \emph{points chauds}, c'est-à-dire les questions sans réponse.
+\end{concept}
+
+\noindent\begin{tabularx}{\linewidth}{lXX}
+\toprule
+\textbf{Couleur} & \textbf{Élément} & \textbf{Exemple Sika} \\ \midrule
+Orange & Événement métier & Cotisation confirmée \\
+Bleu & Commande & Cotiser pour le tour \\
+Jaune & Acteur & Trésorière de groupe \\
+Lilas & Politique & Dès que tous ont cotisé, clôturer le tour \\
+Rose & Système externe & Plateforme Mobile Money \\
+Rouge & Point chaud & Que faire d'un membre qui ne cotise pas ? \\
+\bottomrule
+\end{tabularx}
+
+\begin{figure}[H]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  ev/.style={fill=ochre!35,draw=ochre,rounded corners=2pt,align=center,font=\sffamily\scriptsize,text width=2.4cm,minimum height=9mm},
+  cde/.style={fill=accentl!35,draw=accentl,rounded corners=2pt,align=center,font=\sffamily\scriptsize,text width=2.4cm,minimum height=9mm},
+  po/.style={fill=violet!15,draw=violet!60,rounded corners=2pt,align=center,font=\sffamily\scriptsize,text width=2.4cm,minimum height=9mm},
+  hot/.style={fill=brick!20,draw=brick,rounded corners=2pt,align=center,font=\sffamily\scriptsize,text width=3.6cm},
+  ar/.style={-{Stealth},grey,thick}]
+  \node[ev] (e0) at (0,0) {Tour ouvert};
+  \node[cde] (c1) at (3.2,0) {Cotiser};
+  \node[ev] (e1) at (6.4,0) {Cotisation initiée};
+  \node[ev] (e2) at (9.6,0.9) {Cotisation confirmée};
+  \node[ev] (e3) at (9.6,-0.9) {Cotisation échouée};
+  \node[po] (p1) at (12.8,0.9) {Dès que tous ont cotisé : clôturer};
+  \node[ev] (e4) at (16,0.9) {Tour clôturé};
+  \node[cde] (c2) at (16,-0.9) {Remettre le pot};
+  \node[ev] (e5) at (12.8,-0.9) {Pot remis};
+  \draw[ar] (e0)--(c1); \draw[ar] (c1)--(e1); \draw[ar] (e1)--(e2); \draw[ar] (e1)--(e3);
+  \draw[ar] (e2)--(p1); \draw[ar] (p1)--(e4); \draw[ar] (e4)--(c2); \draw[ar] (c2)--(e5);
+  \node[hot] at (9.6,-2.7) {\textbf{H2} Au bout de combien de temps une cotisation sans réponse est-elle \q{échouée} ?};
+  \node[hot] at (14.4,-2.7) {\textbf{H1} Que fait-on d'un membre qui ne cotise pas avant la date limite ?};
+\end{tikzpicture}}
+\caption{Le flux principal de \sika{}, tel qu'il sort de l'atelier. Les deux points chauds sont en rouge.}
+\end{figure}
+
+\begin{piege}[Piège : trancher un point chaud sans son responsable]
+H1 touche au règlement intérieur ; seule la présidente peut y répondre. Le skill ne tranche \emph{jamais}
+un point chaud lui-même : il l'inscrit dans la table avec un responsable et une échéance. H2, lui,
+conditionnera la règle R2 de la spécification (chapitre~\ref{ch:spec}).
+\end{piege}
+
+\section{Le glossaire : un seul mot par chose}
+\begin{concept}[Langage omniprésent]
+Un vocabulaire unique, partagé par le métier et le code. \emph{Un terme} = \emph{une définition} =
+\emph{un nom technique anglais}. Les synonymes courants sont listés pour être \textbf{bannis}.
+\end{concept}
+
+Voici le glossaire de \sika{} (extrait). La dernière colonne alimente un script.
+\noindent\begin{tabularx}{\linewidth}{llX>{\raggedright\arraybackslash}p{3.4cm}}
+\toprule
+\textbf{Terme} & \textbf{Nom technique} & \textbf{Définition} & \textbf{Synonymes bannis} \\ \midrule
+Membre & \cmd{Member} & Personne qui cotise dans un groupe & adhérente, user, client \\
+Groupe & \cmd{SavingsGroup} & Ensemble de membres qui cotisent ensemble & cercle \\
+Tour & \cmd{Round} & Période au bout de laquelle un seul membre reçoit le pot & cycle, session \\
+Cotisation & \cmd{Contribution} & Somme versée par un membre pour un tour & versement, payment \\
+Pot & \cmd{Pot} & Somme des cotisations confirmées d'un tour & cagnotte, caisse \\
+Bénéficiaire & \cmd{Beneficiary} & Membre qui reçoit le pot d'un tour & gagnant, winner \\
+\bottomrule
+\end{tabularx}
+
+\subsection*{Le garde-fou FF-05 en action}
+Un développeur écrit, par habitude, une classe \cmd{Payment}. Le script lit la colonne des synonymes et cherche
+chaque mot dans le code (sortie réelle) :
+\begin{code}
+\begin{Verbatim}
+$ scripts/check-glossary-terms.sh docs/01-domaine/glossaire.md src/
+src/a.ts:1:class Payment { amountXof: number }
+KO: terme banni « payment »
+\end{Verbatim}
+\end{code}
+Après correction en \cmd{Contribution} :
+\begin{code}
+\begin{Verbatim}
+OK: aucun terme banni
+\end{Verbatim}
+\end{code}
+
+\begin{piege}[Piège : affaiblir le glossaire pour faire passer le contrôle]
+Quand le script crie, la mauvaise réponse est de retirer le synonyme de la liste. La bonne :
+renommer dans le code. Le glossaire est un contrat avec le métier.
+\end{piege}
+
+\section{Sous-domaines et context map}
+\begin{concept}[Bounded context]
+Une frontière à l'intérieur de laquelle un modèle et son vocabulaire sont cohérents. Hors de la
+frontière, le même mot peut signifier autre chose.
+\end{concept}
+Les sous-domaines se classent en trois familles : le \textbf{cœur} (ce qui différencie, là où va l'effort de
+conception), le \textbf{support} (nécessaire, pas différenciant) et le \textbf{générique} (commun à tous les systèmes, on
+l'achète ou on le fait au plus simple).
+
+\begin{figure}[H]
+\centering
+\resizebox{.95\linewidth}{!}{%
+\begin{tikzpicture}[
+  bc/.style={draw,rounded corners=4pt,align=center,font=\sffamily\small,minimum width=3.4cm,minimum height=12mm},
+  core/.style={bc,fill=accent,draw=accent,text=white},
+  sup/.style={bc,fill=ochre!15,draw=ochre},
+  gen/.style={bc,fill=grey!15,draw=grey},
+  rel/.style={-{Stealth},thick,accent},
+  lab/.style={font=\sffamily\scriptsize,text=accent,fill=white,inner sep=1.5pt}]
+  \node[core] (c) at (0,0) {\textbf{Cotisation}\\{\scriptsize cœur : tours, cotisations, pot}};
+  \node[sup] (n) at (5.6,1.8) {\textbf{Notifications}\\{\scriptsize support : SMS}};
+  \node[gen] (i) at (-5.6,1.8) {\textbf{Identité}\\{\scriptsize générique}};
+  \node[gen] (p) at (0,-3) {\textbf{Paiement mobile}\\{\scriptsize générique : agrégateur Mobile Money}};
+  \draw[rel] (c)--(n) node[midway,lab]{Customer / Supplier};
+  \draw[rel] (i)--(c) node[midway,lab]{Conformist};
+  \draw[rel] (p)--(c) node[midway,lab,xshift=0pt]{ACL};
+\end{tikzpicture}}
+\caption{La context map de \sika{} : un cœur, un support, deux contextes génériques.}
+\end{figure}
+
+\noindent\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}p{3.8cm}X}
+\toprule
+\textbf{Pattern} & \textbf{Entre} & \textbf{Pourquoi} \\ \midrule
+ACL (couche anticorruption) & Paiement mobile $\to$ Cotisation & isoler les particularités de chaque opérateur ; le cœur ne parle jamais MTN ou Moov directement \\
+Conformist & Identité $\to$ Cotisation & on adopte le modèle de la solution d'identité sans le déformer \\
+Customer / Supplier & Cotisation $\to$ Notifications & le cœur exprime ses besoins ; le support s'y conforme \\
+\bottomrule
+\end{tabularx}
+
+\begin{vousjouez}[À vous de jouer]
+Listez dix événements de votre projet, en quelques minutes, au participe passé. Repérez un mot qu'un collègue
+et vous employez pour deux choses différentes (ou deux mots pour une chose). Écrivez la ligne de glossaire correspondante, avec
+son nom technique anglais et deux synonymes à bannir.
+\end{vousjouez}
+
+\begin{retenir}[À retenir]
+\begin{itemize}
+  \item Un point chaud n'est jamais tranché sans son responsable.
+  \item Un terme = une définition = un nom technique ; les synonymes sont bannis et contrôlés (FF-05).
+  \item L'effort de conception va au cœur ; le reste s'achète ou reste simple.
+\end{itemize}
+\end{retenir}
+\source{skills/forge-domaine/SKILL.md, scripts/check-glossary-terms.sh}
+
+\begin{acquis}
+  \item Pourquoi un événement s'écrit-il au participe passé ?
+  \item Que contient la colonne « Synonymes à éviter », et qui la lit ?
+  \item Dans \sika{}, pourquoi le paiement mobile est-il isolé derrière une ACL ?
+\end{acquis}

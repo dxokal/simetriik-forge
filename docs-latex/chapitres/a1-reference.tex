@@ -1,24 +1,24 @@
-\chapter{Référence des commandes et scripts}
-\section{Skills}
-\noindent\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{5.6cm}X}
+\chapter{Référence des skills et des scripts}\label{app:ref}
+\section*{Les skills}
+\noindent\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{4.4cm}X}
 \toprule \textbf{Skill} & \textbf{Rôle} \\ \midrule
-\cmd{forge-init} & instancie le dossier de conception \\
-\cmd{forge-cadrage} & étape 0 : vision et impact map \\
-\cmd{forge-domaine} & étape 1 : event storming, glossaire, context map \\
-\cmd{forge-spec} & étape 2 : spécification et Gherkin \\
-\cmd{forge-architecture} & étape 3 : C4, ADR (dont la stack), fitness functions \\
-\cmd{forge-contrat} & contrat OpenAPI rattaché aux specs \\
-\cmd{forge-implemente} & implémentation d'une spec validée \\
-\cmd{forge-rapide} & cycle court pour petites fonctionnalités \\
-\cmd{forge-recette} & étape 5 : plan de recette \\
-\cmd{forge-prod} & étape 6 : déploiement, runbook, rollback, monitoring \\
-\cmd{forge-statut} & tableau de bord et prochaine action \\
-\cmd{forge-apprendre} & leçons pratiques \\
+\skill{forge-init} & instancie le dossier de conception \\
+\skill{forge-cadrage} & étape 0 : vision et impact map \\
+\skill{forge-domaine} & étape 1 : event storming, glossaire, context map \\
+\skill{forge-spec} & étape 2 : spécification et Gherkin \\
+\skill{forge-architecture} & étape 3 : C4, ADR (dont la stack), fitness functions \\
+\skill{forge-contrat} & contrat OpenAPI rattaché aux specs \\
+\skill{forge-implemente} & implémentation d'une spec validée \\
+\skill{forge-rapide} & cycle court pour petites fonctionnalités \\
+\skill{forge-recette} & étape 5 : plan de recette \\
+\skill{forge-prod} & étape 6 : déploiement, runbook, retour arrière, monitoring \\
+\skill{forge-statut} & tableau de bord et prochaine action \\
+\skill{forge-apprendre} & leçons pratiques \\
 \bottomrule
 \end{tabularx}
 
-\section{Scripts (\texttt{scripts/})}
-\noindent\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{5.6cm}X}
+\section*{Les scripts (\texttt{scripts/})}
+\noindent\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{5.3cm}X}
 \toprule \textbf{Script} & \textbf{Contrôle} \\ \midrule
 \cmd{check-spec-validated.sh} & une spec est au statut \emph{Validée} (statut seulement) \\
 \cmd{check-openapi-first.sh} & chaque \cmd{operationId} cite une spec validée \\
@@ -34,4 +34,4 @@
 \cmd{forge-lecons.sh} & progression des leçons \\
 \bottomrule
 \end{tabularx}
-Tous sont du bash pur (avec awk et grep) et réutilisables en CI. \cmd{bash tests/run.sh} exécute leurs tests.
+Tous sont en bash (avec \cmd{awk} et \cmd{grep}) et réutilisables en CI. \cmd{bash tests/run.sh} exécute leurs tests.

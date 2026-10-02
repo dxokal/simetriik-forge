@@ -1,46 +1,117 @@
-\chapter{Prise en main}
+\chapter{Prise en main}\label{ch:prise}
+
+\begin{objectifs}[Objectifs]
+\begin{itemize}
+  \item installer le plugin selon votre outil (Claude Code, Codex, OpenCode) ;
+  \item initialiser le dossier de conception d'un nouveau projet ;
+  \item lire la structure du dossier et le vocabulaire des statuts ;
+  \item savoir toujours où vous en êtes, et quoi faire ensuite.
+\end{itemize}
+\end{objectifs}
+
+\begin{situation}[Sur le terrain : \sika{}]
+Le contrat est signé. Dans un dossier vide nommé \cmd{sika/}, il est temps de poser les fondations.
+Avant d'écrire la moindre ligne de code, nous allons créer la mémoire du projet : un dossier de
+conception qui contiendra chaque décision, chaque règle, chaque accord avec le client.
+\end{situation}
+
 \section{Installation}
 \begin{itemize}
-  \item \textbf{Claude Code} : \cmd{claude --plugin-dir /chemin/vers/simetriik-forge}.
-  \item \textbf{Codex et OpenCode} : lancer \cmd{./install.sh} (liens symboliques dans \cmd{~/.agents/skills}), puis redémarrer l'outil si les skills n'apparaissent pas.
+  \item \textbf{Claude Code} : \cmd{claude --plugin-dir /chemin/vers/simetriik-forge}. Les skills s'invoquent alors sous la forme \cmd{/simetriik-forge:forge-init}.
+  \item \textbf{Claude Code via marketplace} : \cmd{claude plugin marketplace add dxokal/simetriik-forge}, puis \cmd{claude plugin install simetriik-forge@simetriik}.
+  \item \textbf{Codex et OpenCode} : lancez \cmd{./install.sh} (liens symboliques dans \cmd{~/.agents/skills}) puis redémarrez l'outil si les skills n'apparaissent pas.
 \end{itemize}
-Les skills s'invoquent par leur nom, par exemple \cmd{/simetriik-forge:forge-init} sous Claude Code.
 
-\section{Démarrer un projet : \texttt{forge-init}}
-Dans un dossier vide, lancez \cmd{forge-init}. Le skill :
+\section{Démarrer un projet avec \texttt{forge-init}}
+Dans le dossier vide du projet, lancez \skill{forge-init}. Le skill suit toujours le même déroulé :
 \begin{enumerate}
-  \item vérifie qu'il n'existe pas déjà de \cmd{docs/} ni de \cmd{AGENTS.md} (il n'écrase jamais) ;
-  \item vous pose quatre questions, une à la fois : nom du projet, institution cliente, chef de projet, date de démarrage ;
-  \item copie le dossier de conception (\cmd{docs/}, \cmd{api/}, \cmd{AGENTS.md}, \cmd{.github/}) et les scripts de garde-fou dans \cmd{scripts/} ;
-  \item remplace les marqueurs \cmd{[NOM DU PROJET]}, \cmd{[INSTITUTION]}, \cmd{[NOM]}, \cmd{[JJ/MM/AAAA]} ;
-  \item crée \cmd{CLAUDE.md} contenant \cmd{@AGENTS.md} ;
-  \item annonce la suite : \cmd{forge-cadrage}.
+  \item il vérifie qu'il n'existe pas déjà de \cmd{docs/} ni de \cmd{AGENTS.md} ; s'il en trouve, il s'arrête (il n'écrase \emph{jamais}) ;
+  \item il vous pose quatre questions, une à la fois : nom du projet, institution cliente, chef de projet, date de démarrage ;
+  \item il copie le dossier de conception et les scripts de garde-fou dans \cmd{scripts/} ;
+  \item il remplace les marqueurs \cmd{[NOM DU PROJET]}, \cmd{[INSTITUTION]}, \cmd{[NOM]} et \cmd{[JJ/MM/AAAA]} ;
+  \item il crée \cmd{CLAUDE.md}, qui contient simplement \cmd{@AGENTS.md} ;
+  \item il annonce la suite : \skill{forge-cadrage}.
 \end{enumerate}
-\astuce{La stack technique n'est \emph{pas} demandée à l'initialisation : c'est une décision d'architecture, prise à l'étape~3 par un ADR, à partir du cadrage et du domaine.}
 
-\section{Structure du dossier de conception}
-\begin{lstlisting}
-docs/00-cadrage/        vision, impact map
-docs/01-domaine/        event storming, glossaire, context map
-docs/02-specs/          SPEC-NNN.md, features/*.feature, exigences non fonctionnelles
-docs/03-architecture/   adr/, c4/workspace.dsl, fitness-functions.md
+\begin{piege}[Piège : « quelle stack ? »]
+\skill{forge-init} ne demande \emph{pas} votre technologie. Ce n'est pas un oubli : choisir un
+langage ou un framework est une décision d'architecture, prise à l'étape~3 dans un ADR, à partir
+de ce que le cadrage et le domaine auront appris. Décider ici, c'est décider à l'aveugle.
+\end{piege}
+
+\section{Lire le dossier de conception}
+Voici ce que contient \cmd{sika/} juste après l'initialisation. Chaque dossier correspond à une étape ;
+le numéro dans son nom vous dit quand l'ouvrir.
+\begin{code}
+\begin{Verbatim}
+docs/00-cadrage/          vision.md, impact-map.md
+docs/01-domaine/          event-storming.md, glossaire.md, context-map.md
+docs/02-specs/            SPEC-NNN.md, features/*.feature, exigences non fonctionnelles
+docs/03-architecture/     adr/, c4/workspace.dsl, fitness-functions.md
 docs/04-livrables-client/
-docs/05-recette/        plan-recette.md
-docs/06-production/     deploiement, runbook, rollback, monitoring
-api/openapi.yaml        contrat d'API
-AGENTS.md               consignes pour les assistants de code
-\end{lstlisting}
+docs/05-recette/          plan-recette.md
+docs/06-production/       plan-deploiement, runbook, rollback, plan-monitoring
+api/openapi.yaml          le contrat d'API
+scripts/                  les garde-fous (check-*.sh, forge-*.sh)
+AGENTS.md                 les consignes données à l'assistant de code
+\end{Verbatim}
+\end{code}
 
-\section{Suivre sa progression}
+\begin{concept}[AGENTS.md]
+Le fichier de consignes que l'assistant de code relit à chaque session : principes de la démarche,
+règles de nommage, interdits. Il est versionné avec le projet, donc partagé par toute l'équipe.
+\end{concept}
+
+\section{Les trois statuts}
+Chaque livrable porte un statut en tête de fichier. La progression est toujours la même :
+
+\begin{center}
+\begin{tikzpicture}[st/.style={draw=accent,rounded corners=3pt,fill=accent!7,minimum width=2.6cm,minimum height=8mm,font=\sffamily\small},ar/.style={-{Stealth},thick,accent}]
+  \node[st] (a) {Brouillon}; \node[st,right=12mm of a] (b) {En revue}; \node[st,right=12mm of b,fill=leaf!15,draw=leaf] (c) {\textbf{Validée}};
+  \draw[ar] (a)--(b); \draw[ar] (b)--(c);
+  \node[below=1mm of c,font=\sffamily\scriptsize,text=grey] {par un humain, avec nom et date};
+\end{tikzpicture}
+\end{center}
+Pour un ADR, le dernier statut s'appelle \emph{Acceptée}. Les scripts lisent ces mots à la lettre :
+\q{Validée}, pas \q{validé} ni \q{OK}.
+
+\section{Savoir où l'on en est}
 Deux outils, tous deux en lecture seule :
-\begin{itemize}
-  \item \cmd{forge-statut} : tableau de bord complet (état de chaque étape et de chaque spec, garde-fous en échec) et \emph{une seule} prochaine action recommandée.
-  \item \cmd{scripts/forge-progress.sh} : barre de progression sur les sept étapes, affichée à la fin de chaque skill, par exemple
-\par\smallskip{\small\cmd{Progression [███░░░░] 3/7 · étape en cours : Architecture · suite : forge-contrat}}\par
-\end{itemize}
-Une étape compte comme faite lorsque son livrable est au statut \emph{Validée} (ADR : \emph{Acceptée}).
-Pour l'architecture, la barre exige au moins deux ADR acceptés (l'ADR-0001 du monolithe modulaire et l'ADR de stack).
+\begin{description}
+  \item[\skill{forge-statut}] le tableau de bord complet : état de chaque étape et de chaque spec, garde-fous en échec, et \emph{une seule} prochaine action recommandée.
+  \item[\cmd{scripts/forge-progress.sh}] la barre de progression sur les sept étapes, affichée à la fin de chaque skill.
+\end{description}
+Sur \sika{}, au sortir de l'initialisation, voici ce qu'elle affiche (sortie réelle) :
+\begin{code}
+\begin{Verbatim}
+Progression [░░░░░░░] 0/7 · étape en cours : Cadrage · suite : forge-cadrage
+\end{Verbatim}
+\end{code}
+Une étape compte comme faite lorsque son livrable est \emph{Validée} (ADR : \emph{Acceptée}).
+Pour l'architecture, la barre exige au moins deux ADR acceptés : l'ADR-0001 du monolithe modulaire,
+fourni, et l'ADR de stack, qui reste à écrire.
 
-\section{Les statuts}
-Brouillon $\rightarrow$ En revue $\rightarrow$ \textbf{Validée}. Seul un humain passe un livrable à \emph{Validée} (en indiquant son nom et la date).
-\source{skills/forge-init, forge-statut}
+\section{Les hooks Git, en option}
+\skill{forge-init} propose, sans l'imposer, d'installer des hooks Git qui refusent tout commit de code
+sans spécification validée (chapitre~\ref{ch:git}). Ils modifient le dépôt : le skill demande donc votre accord.
+
+\begin{vousjouez}[À vous de jouer]
+Créez un dossier d'essai, lancez \skill{forge-init} et répondez aux quatre questions. Puis lancez
+\cmd{scripts/forge-progress.sh}. Vérifiez que la barre est à 0/7 et que la suite recommandée est
+\skill{forge-cadrage}. Ouvrez \cmd{AGENTS.md} et soulignez une règle qui vous surprend.
+\end{vousjouez}
+
+\begin{retenir}[À retenir]
+\begin{itemize}
+  \item \skill{forge-init} n'écrase rien et ne demande pas la stack.
+  \item Les statuts : Brouillon, En revue, \textbf{Validée} (par un humain).
+  \item \skill{forge-statut} dit où vous en êtes et ce qu'il faut faire ensuite.
+\end{itemize}
+\end{retenir}
+\source{skills/forge-init, skills/forge-statut, scripts/forge-progress.sh}
+
+\begin{acquis}
+  \item Que se passe-t-il si \cmd{docs/} existe déjà quand vous lancez \skill{forge-init} ?
+  \item Pourquoi la stack technique n'est-elle pas demandée à l'initialisation ?
+  \item À quelle condition une étape compte-t-elle comme faite dans la barre de progression ?
+\end{acquis}

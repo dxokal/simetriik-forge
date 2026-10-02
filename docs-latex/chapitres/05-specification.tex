@@ -1,0 +1,161 @@
+\chapter{Spécifier une fonctionnalité}\label{ch:spec}
+
+\begin{objectifs}[Objectifs --- étape 2, \texttt{forge-spec}]
+\begin{itemize}
+  \item rédiger une spécification complète, règle par règle, avec la source de chaque règle ;
+  \item écrire des scénarios Gherkin : nominal, limite, erreur ;
+  \item distinguer ce que le script contrôle (le statut) de ce que vous devez relire ;
+  \item obtenir une validation humaine, nommée et datée.
+\end{itemize}
+\end{objectifs}
+
+\begin{situation}[Sur le terrain : \sika{}]
+Première fonctionnalité du lot 1 : \q{Cotiser par Mobile Money}. Le développeur est tenté de commencer par
+l'écran. La spec va d'abord forcer trois questions : quel montant est accepté ? quand une cotisation
+compte-t-elle vraiment ? que se passe-t-il si un membre cotise deux fois ?
+\end{situation}
+
+\section{Le concept : une règle, une source, un exemple}
+\begin{concept}[Spécification]
+Le document qui décrit \emph{ce que la fonctionnalité doit faire}, sans dire comment. Chaque règle métier
+y figure avec sa \textbf{source} (texte réglementaire, règlement intérieur, atelier) : une règle sans
+source est une opinion.
+\end{concept}
+\begin{concept}[Gherkin]
+Un langage d'exemples en français (\emph{Étant donné, Quand, Alors}). Un fichier \cmd{.feature}
+contient une \cmd{Règle} par règle métier, et pour chacune au moins un cas nominal, un cas limite et un cas d'erreur.
+Chaque scénario sert à la fois de critère d'acceptation et de test.
+\end{concept}
+
+\section{Pas à pas avec \texttt{forge-spec}}
+\begin{enumerate}
+  \item Le skill lit le glossaire, l'impact map et le gabarit, puis numérote la spec : \cmd{SPEC-001}.
+  \item Il copie le gabarit en \cmd{docs/02-specs/SPEC-001.md}, statut \emph{Brouillon}.
+  \item Il remplit section par section, une question à la fois : problème, récit, règles métier (chacune avec sa source), données (les données personnelles sont marquées), interfaces, hors périmètre.
+  \item Il écrit \cmd{features/SPEC-001.feature}.
+  \item Il passe la spec \emph{En revue} ; la validation, métier puis technique, est humaine.
+\end{enumerate}
+Le skill n'invente jamais une règle : quand elle manque, il l'inscrit en \emph{Questions ouvertes} et vous la demande.
+
+\section{La spécification de \sika{} (extrait)}
+L'extrait est condensé pour la lecture. Dans le fichier réel, l'en-tête est un tableau Markdown (\cmd{| Statut | Brouillon |}) : c'est cette ligne, et elle seule, que lit le garde-fou.
+
+\begin{code}
+\begin{Verbatim}
+# SPEC-001 — Cotiser par Mobile Money
+
+Statut : En revue · Contexte : Cotisation · Objectif : O1
+Priorité : Must
+
+## 2. Récit utilisateur
+En tant que membre d'un groupe, je veux cotiser depuis mon
+téléphone afin que ma cotisation soit enregistrée sans
+contestation.
+
+## 3. Règles métier
+R1  Le montant est celui fixé pour le groupe.
+    Source : règlement intérieur, art. 7
+R2  Une cotisation ne compte qu'une fois confirmée par
+    l'opérateur.
+    Source : atelier Event Storming, point chaud H2
+R3  Un membre cotise une seule fois par tour.
+    Source : règlement intérieur, art. 8
+
+## 5. Données
+amountXof  entier, obligatoire, non personnelle
+phone      texte, obligatoire, DONNÉE PERSONNELLE (APDP)
+
+## 9. Questions ouvertes
+Q1  Après combien de minutes sans réponse de l'opérateur une
+    cotisation est-elle déclarée échouée ?
+    Responsable : trésorière générale
+\end{Verbatim}
+\end{code}
+
+\begin{piege}[Piège : valider avec une question ouverte bloquante]
+Tant que Q1 n'a pas de réponse, R2 est incomplète : le cas limite \q{l'opérateur ne répond pas} ne peut
+pas s'écrire. Le script, lui, ne le verra pas : il ne lit que le statut. C'est à vous de relire avant
+de proposer \emph{Validée}. Ici, la trésorière générale répond \q{15 minutes} ; la question est close, et
+le scénario limite peut être écrit.
+\end{piege}
+
+\subsection*{Les scénarios Gherkin}
+\begin{code}
+\begin{Verbatim}
+# language: fr
+Fonctionnalité: Cotiser par Mobile Money
+  En tant que membre d'un groupe
+  Je veux cotiser depuis mon téléphone
+  Afin que ma cotisation soit enregistrée sans contestation
+
+  Règle: R1 — le montant est celui fixé pour le groupe
+    Scénario: Cotisation au montant du groupe
+      Étant donné un groupe dont la cotisation est de 5000 FCFA
+      Et un membre de ce groupe avec un tour ouvert
+      Quand le membre cotise 5000 FCFA
+      Alors la cotisation est initiée auprès de l'opérateur
+    Scénario: Montant différent de celui du groupe
+      Quand le membre cotise 3000 FCFA
+      Alors l'action est refusée avec le motif "Montant incorrect"
+
+  Règle: R2 — une cotisation ne compte qu'une fois confirmée
+    Scénario: Confirmation par l'opérateur
+      Étant donné une cotisation initiée de 5000 FCFA
+      Quand l'opérateur confirme la cotisation
+      Alors le solde du pot augmente de 5000 FCFA
+      Et le membre reçoit un SMS de confirmation
+    Scénario: Opérateur sans réponse après 15 minutes
+      Étant donné une cotisation initiée depuis 15 minutes
+      Quand le délai expire
+      Alors la cotisation est échouée et ne compte pas dans le pot
+
+  Règle: R3 — une seule cotisation par membre et par tour
+    Scénario: Seconde cotisation dans le même tour
+      Étant donné un membre ayant déjà cotisé pour ce tour
+      Quand le membre cotise à nouveau
+      Alors l'action est refusée avec le motif "Déjà cotisé pour ce tour"
+\end{Verbatim}
+\end{code}
+Remarquez la lecture : le cas limite (15 minutes), le cas nominal et le cas d'erreur vivent côte à côte, sous la règle qu'ils éprouvent.
+Remarquez aussi le vocabulaire : \emph{cotisation}, \emph{pot}, \emph{tour} --- pas \q{paiement}, \q{cagnotte}, \q{cycle}.
+
+\section{Le garde-fou : le statut, et rien que le statut}
+\begin{code}
+\begin{Verbatim}
+$ scripts/check-spec-validated.sh docs/02-specs/SPEC-001.md
+KO: docs/02-specs/SPEC-001.md a le statut « Brouillon » (attendu : Validée)
+
+$ scripts/check-spec-validated.sh docs/02-specs/SPEC-001.md
+OK: docs/02-specs/SPEC-001.md est Validée
+\end{Verbatim}
+\end{code}
+Le second résultat n'apparaît qu'après qu'un humain a écrit \textbf{Validée} (avec nom et date) dans le tableau d'en-tête.
+
+\begin{retenir}[Avant de proposer « Validée », relisez cette liste]
+\begin{itemize}
+  \item les sections 1 à 5 sont renseignées ;
+  \item aucun marqueur \cmd{[...]} ne subsiste ;
+  \item aucune question ouverte bloquante ;
+  \item le fichier \cmd{.feature} couvre chaque règle.
+\end{itemize}
+\end{retenir}
+
+\begin{vousjouez}[À vous de jouer]
+Choisissez la première fonctionnalité de votre projet. Écrivez deux règles métier avec leur source. Si l'une n'a pas de source,
+écrivez-la en question ouverte et nommez qui peut y répondre. Rédigez trois scénarios (nominal, limite, erreur) en Gherkin français.
+\end{vousjouez}
+
+\begin{retenir}[À retenir]
+\begin{itemize}
+  \item Pas de code sans spec \emph{Validée}, et la validation est humaine.
+  \item Règle $\Rightarrow$ source ; règle sans source $\Rightarrow$ question ouverte.
+  \item Le script contrôle le statut ; la complétude se relit.
+\end{itemize}
+\end{retenir}
+\source{skills/forge-spec/SKILL.md, templates/docs/02-specs}
+
+\begin{acquis}
+  \item Qu'écrit le skill quand une règle métier manque ?
+  \item Que contrôle exactement \cmd{check-spec-validated.sh} ?
+  \item Combien de scénarios minimum par règle, et de quels types ?
+\end{acquis}

@@ -1,0 +1,96 @@
+\chapter{Mettre en production}\label{ch:prod}
+
+\begin{objectifs}[Objectifs --- étape 6, \texttt{forge-prod}]
+\begin{itemize}
+  \item vérifier la porte d'entrée : PV signé, aucune anomalie bloquante ;
+  \item rédiger plan de déploiement, runbook, retour arrière et monitoring ;
+  \item relier chaque objectif de l'impact map à un indicateur suivi après la mise en service ;
+  \item savoir quelles actions exigent votre confirmation explicite.
+\end{itemize}
+\end{objectifs}
+
+\begin{situation}[Sur le terrain : \sika{}]
+Vendredi, 17 h. Le PV du lot 1 est signé. Un coéquipier propose : \q{On met en prod ce soir, ça passera.}
+Or le marché ferme à 18 h, les cotisations de la semaine tombent entre 16 h et 20 h, et personne n'a dit
+comment revenir en arrière si la confirmation des opérateurs échoue. Cette étape existe pour que la
+mise en service soit un non-événement.
+\end{situation}
+
+\section{La porte d'entrée}
+Le skill commence par une vérification qui peut tout arrêter : le \textbf{PV de recette est-il signé par le client, sans
+anomalie bloquante ?} Sinon, il s'arrête et le dit.
+
+\section{Pas à pas avec \texttt{forge-prod}}
+Il produit quatre documents dans \cmd{docs/06-production/} :
+
+\noindent\begin{tabularx}{\linewidth}{lX}
+\toprule
+\textbf{Livrable} & \textbf{Contenu pour \sika{}} \\ \midrule
+\cmd{plan-deploiement.md} & hébergement (une VM, Docker Compose, d'après l'ADR-0001), pipeline CI/CD, fenêtre de déploiement \\
+\cmd{runbook.md} & que faire si les confirmations de l'opérateur n'arrivent plus ? comment relancer la réconciliation ? \\
+\cmd{rollback.md} & retour arrière avec déclencheurs \emph{chiffrés} \\
+\cmd{plan-monitoring.md} & indicateurs techniques et indicateurs métier liés aux objectifs \\
+\bottomrule
+\end{tabularx}
+
+Le skill interroge d'abord sur l'hébergement réel (VM du client, cloud, on-premise), la capacité d'exploitation et le budget
+en FCFA. Une décision d'hébergement ou d'orchestration est un ADR, via \skill{forge-architecture}.
+
+\subsection*{Les contraintes par défaut}
+\begin{itemize}
+  \item connexions lentes ou instables : le service doit tolérer coupures et reprises ;
+  \item paiements Mobile Money : une file de reprise, des statuts \emph{vérifiables auprès de l'opérateur} ;
+  \item secrets en variables d'environnement, jamais dans le code.
+\end{itemize}
+
+\subsection*{Retour arrière : des déclencheurs, pas des intentions}
+\begin{code}
+\begin{Verbatim}
+Déclencheurs de retour arrière (Sika, lot 1)
+- plus de 5 % de cotisations non confirmées au bout de 15 min, pendant 15 min
+- aucune confirmation reçue d'un opérateur pendant 10 min
+- erreur 5xx sur plus de 2 % des requêtes pendant 10 min
+\end{Verbatim}
+\end{code}
+
+\subsection*{Monitoring métier : relier l'impact map à la production}
+Chaque objectif \texttt{O\#} reçoit un indicateur, une source de mesure et deux revues.
+\noindent\begin{tabularx}{\linewidth}{llXll}
+\toprule
+\textbf{Objectif} & \textbf{Indicateur} & \textbf{Source} & \textbf{J+7} & \textbf{J+30} \\ \midrule
+O1 & \% de cotisations contestées & journal des contestations, relevé de la trésorière & revue & revue \\
+O2 & délai de remise du pot & horodatages \emph{Tour clôturé} $\to$ \emph{Pot remis} & première mesure & revue \\
+\bottomrule
+\end{tabularx}
+La valeur \emph{À mesurer} de O2 trouve enfin sa réponse : le journal d'événements de \sika{} la produira.
+
+\begin{piege}[Piège : « le skill l'a déployé »]
+Ce skill \emph{rédige et prépare} ; il n'exécute \textbf{jamais} un déploiement de production. Toute modification de CI/CD, de Docker, de
+fichiers \cmd{.env}, toute migration, toute donnée de production, tout \cmd{git push} et tout appel à un service payant exigent votre
+confirmation explicite.
+\end{piege}
+
+\section{La clôture}
+Après la mise en service : revue post-production à J+7 et J+30, puis retour à \skill{forge-cadrage} pour le lot suivant. La boucle est
+fermée : les mesures de production nourrissent le prochain cadrage.
+
+\begin{vousjouez}[À vous de jouer]
+Pour votre projet, écrivez trois déclencheurs chiffrés de retour arrière. Puis choisissez un objectif de votre impact map : où
+sera-t-il mesuré, par qui, à J+7 et J+30 ?
+\end{vousjouez}
+
+\begin{retenir}[À retenir]
+\begin{itemize}
+  \item Porte d'entrée : PV signé, zéro bloquante.
+  \item Quatre livrables : déploiement, runbook, retour arrière, monitoring.
+  \item Chaque objectif $\to$ un indicateur $\to$ une revue à J+7 et J+30.
+  \item Le skill prépare ; vous confirmez toute action sensible.
+\end{itemize}
+\end{retenir}
+\source{skills/forge-prod/SKILL.md, templates/docs/06-production}
+
+\begin{acquis}
+  \item Quelle est la porte d'entrée de la production ?
+  \item Pourquoi un déclencheur de retour arrière doit-il être chiffré ?
+  \item Quelles actions exigent toujours votre confirmation ?
+\end{acquis}

@@ -1,0 +1,101 @@
+\chapter{Rigueur Git}\label{ch:git}
+
+\begin{objectifs}[Objectifs]
+\begin{itemize}
+  \item nommer vos branches et vos commits selon les conventions du projet ;
+  \item installer les hooks Git et comprendre ce qu'ils bloquent ;
+  \item connaître les limites des hooks locaux.
+\end{itemize}
+\end{objectifs}
+
+\begin{situation}[Sur le terrain : \sika{}]
+Un vendredi soir, un correctif \q{rapide} est poussé directement sur \cmd{main}, sans spec. Lundi, la trésorière générale
+signale un comportement que personne ne sait expliquer. La rigueur Git n'est pas de la bureaucratie : c'est la
+traçabilité de qui a changé quoi, pourquoi, et avec quelle autorisation.
+\end{situation}
+
+\section{Les règles}
+\begin{itemize}
+  \item \textbf{Une branche par fonctionnalité ou correction} : \cmd{feat/SPEC-NNN-slug} (par exemple \cmd{feat/SPEC-001-cotiser}) ou \cmd{fix/slug}. Jamais de code sur \cmd{main}.
+  \item \textbf{Commits petits et atomiques}, un sujet par commit, messages en anglais au format Conventional Commits : \cmd{feat}, \cmd{fix}, \cmd{refactor}, \cmd{docs}, \cmd{test}, \cmd{chore}.
+  \item Le corps du commit cite \cmd{SPEC-NNN}.
+  \item Aucun secret, aucun fichier généré lourd, aucun \cmd{node_modules}.
+\end{itemize}
+
+\section{Les scripts, en action}
+\noindent\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{5.2cm}X}
+\toprule
+\textbf{Script} & \textbf{Rôle} \\ \midrule
+\cmd{check-branch.sh} & refuse \cmd{main}, exige \cmd{feat/...} ou \cmd{fix/...} \\
+\cmd{check-commit-msg.sh} & Conventional Commits, 72 caractères maximum sur la première ligne \\
+\cmd{check-commit-allowed.sh} & sur \cmd{feat/SPEC-NNN-slug}, refuse le code tant que la spec n'est pas \emph{Validée} \\
+\cmd{install-hooks.sh} & installe les hooks \cmd{pre-commit} et \cmd{commit-msg} \\
+\bottomrule
+\end{tabularx}
+\begin{code}
+\begin{Verbatim}
+$ scripts/check-branch.sh feat/SPEC-001-cotiser
+OK: branche feat/SPEC-001-cotiser
+
+$ scripts/check-commit-msg.sh msg-bad.txt      # « added stuff »
+KO: 'added stuff' — attendu « type(portée): sujet » (feat|fix|refactor|docs|test|chore), 72 car. max
+
+$ scripts/check-commit-msg.sh msg-ok.txt       # « feat(api): add login »
+OK: message conforme
+\end{Verbatim}
+\end{code}
+
+\section{Le hook \emph{pre-commit}}
+\begin{figure}[H]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  s/.style={draw=accent,fill=accent!6,rounded corners=3pt,align=center,font=\sffamily\small,minimum width=3.3cm,minimum height=10mm},
+  ok/.style={s,draw=leaf,fill=leaf!12},
+  ko/.style={s,draw=brick,fill=brick!10},
+  ar/.style={-{Stealth},thick,grey},
+  l/.style={font=\sffamily\scriptsize,text=grey}]
+  \node[s] (a) at (0,0) {git commit};
+  \node[s] (b) at (4.4,0) {Seulement\\docs, .md, tests ?};
+  \node[ok] (o1) at (4.4,-2.2) {commit accepté};
+  \node[s] (c) at (8.8,0) {Branche\\fix/... ?};
+  \node[s] (d) at (13.2,0) {Spec nommée\\Validée ?};
+  \node[ko] (k) at (13.2,-2.2) {commit refusé};
+  \node[ok] (o2) at (8.8,-2.2) {commit accepté};
+  \draw[ar] (a)--(b); \draw[ar] (b)--(c) node[midway,above,l]{non}; \draw[ar] (b)--(o1) node[midway,right,l]{oui};
+  \draw[ar] (c)--(d) node[midway,above,l]{non}; \draw[ar] (c)--(o2) node[midway,right,l]{oui};
+  \draw[ar] (d)--(k) node[midway,right,l]{non}; \draw[ar] (d.south west)--(o2.north east) node[midway,above,l,sloped]{oui};
+\end{tikzpicture}}
+\caption{Les décisions du hook \emph{pre-commit}.}
+\end{figure}
+Installation, sur confirmation (le script modifie le dépôt) : \cmd{scripts/install-hooks.sh}. Il n'écrase jamais un hook existant.
+Une branche \cmd{feat/} sans \cmd{SPEC-NNN} est refusée avec le nommage attendu.
+
+\begin{piege}[Piège : contourner et oublier]
+Avec les hooks installés, tout commit sur \cmd{main} est refusé, y compris de documentation. Et \cmd{git commit --no-verify}
+contourne le hook : seule une CI côté serveur rendrait la règle absolue. Si vous contournez, c'est un choix assumé et dit.
+\end{piege}
+
+\section{Les pull requests}
+Le modèle \cmd{.github/pull_request_template.md} demande la ou les specs concernées, l'ADR concerné, le lot ou la version, et la liste des
+vérifications : spec validée, glossaire respecté, contrat à jour, un test par critère d'acceptation, fitness functions, branche et messages conformes.
+
+\begin{vousjouez}[À vous de jouer]
+Installez les hooks sur un dépôt d'essai. Essayez de committer un fichier de code sur \cmd{main}, puis sur
+\cmd{feat/SPEC-001-essai} avec une spec en \emph{Brouillon}. Notez chaque message de refus : à quelle règle correspond-il ?
+\end{vousjouez}
+
+\begin{retenir}[À retenir]
+\begin{itemize}
+  \item Une branche par sujet ; jamais de code sur \cmd{main}.
+  \item Conventional Commits en anglais, citant \cmd{SPEC-NNN}.
+  \item Les hooks sont locaux et contournables : la CI serveur est le filet final.
+\end{itemize}
+\end{retenir}
+\source{scripts/check-branch.sh, check-commit-msg.sh, check-commit-allowed.sh, install-hooks.sh}
+
+\begin{acquis}
+  \item Quels commits le hook \emph{pre-commit} laisse-t-il toujours passer ?
+  \item Pourquoi \cmd{--no-verify} limite-t-il la portée des hooks ?
+  \item Dans quelle langue écrit-on un message de commit ?
+\end{acquis}

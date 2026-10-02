@@ -1,46 +1,115 @@
-\chapter{Pourquoi cette démarche}
-\section{Le problème}
-Un projet logiciel dérape rarement à cause du code : il dérape parce qu'on construit
-la mauvaise chose, qu'on se comprend mal, ou qu'on décide trop tôt sans le dire.
-La démarche Lumière répond à ces trois risques par une chaîne d'étapes courtes, chacune
-produisant un livrable \emph{validé par un humain} avant que la suivante ne commence.
+\chapter{Pourquoi une démarche}\label{ch:demarche}
 
-Le plugin \textbf{Simetriik Forge} met cette démarche en pratique avec un assistant de code.
-Il apporte deux choses : des \emph{skills} (instructions que l'assistant suit pour chaque étape)
-et des \emph{garde-fous} (petits scripts qui échouent quand une règle est violée).
-
-\section{Les principes}
-\begin{itemize}[itemsep=2pt]
-  \item \textbf{Pas de code sans spécification validée.} La validation est humaine ; l'assistant ne valide jamais à votre place.
-  \item \textbf{Chaque fonctionnalité remonte à un objectif mesurable} (impact map).
-  \item \textbf{Un terme = une définition = un nom technique} (langage omniprésent).
-  \item \textbf{Le contrat d'API précède le code} (OpenAPI d'abord).
-  \item \textbf{Les décisions structurantes sont consignées} dans des ADR, y compris le choix de la stack technique.
-  \item \textbf{Les règles automatisables sont automatisées} : les scripts de \texttt{scripts/} les vérifient, en local et en CI.
+\begin{objectifs}[Objectifs]
+\begin{itemize}
+  \item expliquer en trois phrases pourquoi un projet logiciel dérape ;
+  \item citer les six principes de la démarche et leur garde-fou ;
+  \item situer chacune des sept étapes et son skill ;
+  \item dire ce que le plugin ne fera jamais à votre place.
 \end{itemize}
+\end{objectifs}
 
-\section{Les sept étapes}
-\begin{center}
-\begin{tikzpicture}[node distance=4mm,
-  st/.style={draw=accent,fill=accent!8,rounded corners,minimum width=2.1cm,minimum height=9mm,align=center,font=\small},
-  ar/.style={-{Stealth},thick,accent}]
-  \node[st] (a) {0\\Cadrage};
-  \node[st,right=of a] (b) {1\\Domaine};
-  \node[st,right=of b] (c) {2\\Specs};
-  \node[st,right=of c] (d) {3\\Archi.};
-  \draw[ar] (a)--(b); \draw[ar] (b)--(c); \draw[ar] (c)--(d);
-  \node[st,below=7mm of a] (e) {4\\Contrat};
-  \node[st,right=of e] (f) {5\\Recette};
-  \node[st,right=of f] (g) {6\\Production};
-  \draw[ar] (d.south) -- ++(0,-3mm) -| ([yshift=4mm]e.north) -- (e.north);
-  \draw[ar] (e)--(f); \draw[ar] (f)--(g);
-\end{tikzpicture}
-\end{center}
-La mise en œuvre du code (skill \cmd{forge-implemente}) se situe entre le contrat et la recette.
-Après la production, on revient au cadrage pour le lot suivant.
+\begin{situation}[Sur le terrain : \sika{}]
+Un mardi, la présidente de l'Association Entraide Dantokpa reçoit une équipe de développeurs.
+Elle décrit son problème en une phrase : \q{Chaque semaine, quelqu'un dit qu'il a payé et le cahier
+dit le contraire.} Dix minutes plus tard, un développeur propose déjà un écran de connexion, une
+messagerie interne et un classement des meilleures cotisantes. Personne n'a demandé combien de
+cotisations sont contestées aujourd'hui. Ce chapitre explique comment éviter cette scène.
+\end{situation}
+
+\section{Le problème}
+Un projet logiciel dérape rarement à cause du code. Il dérape parce qu'on construit la mauvaise
+chose, parce qu'on se comprend mal, ou parce qu'on décide trop tôt sans le dire. La démarche
+Lumière répond à ces trois risques par une chaîne d'étapes courtes ; chacune produit un
+livrable \emph{validé par un humain} avant que la suivante ne commence.
+
+Le plugin \textbf{Simetriik Forge} met cette démarche en pratique avec un assistant de code. Il
+apporte deux choses, à ne pas confondre :
+\begin{description}
+  \item[Des skills] des instructions que l'assistant suit pour une étape (poser les bonnes questions, remplir le bon gabarit). Ils \emph{guident}.
+  \item[Des garde-fous] de petits scripts (\cmd{scripts/}) qui \emph{échouent} quand une règle est violée. Ils \emph{contrôlent}, sans interprétation, et fonctionnent aussi en intégration continue.
+\end{description}
+
+\begin{concept}[Garde-fou]
+Un script déterministe qui vérifie une règle de la démarche et retourne un code d'échec si elle
+est violée. Il ne juge pas la qualité : il constate un fait (un statut, un nom, un fichier
+présent). La qualité reste l'affaire de la relecture humaine.
+\end{concept}
+
+\section{Les six principes}
+\noindent\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{6.3cm}X}
+\toprule
+\textbf{Principe} & \textbf{Ce qui le fait respecter} \\ \midrule
+Pas de code sans spécification validée. La validation est humaine. & \cmd{check-spec-validated.sh}, hook \emph{pre-commit} \\
+Chaque fonctionnalité remonte à un objectif mesurable. & l'impact map, colonne « Objectif » obligatoire \\
+Un terme = une définition = un nom technique. & \cmd{check-glossary-terms.sh} (FF-05) \\
+Le contrat d'API précède le code. & \cmd{check-openapi-first.sh} \\
+Les décisions structurantes sont consignées, stack comprise. & \cmd{check-adr-present.sh}, ADR \\
+Ce qui s'automatise s'automatise. & les scripts, en local et en CI \\
+\bottomrule
+\end{tabularx}
+
+\section{Les sept étapes d'un coup d'œil}
+La démarche compte sept étapes numérotées de 0 à 6. La mise en œuvre du code, quant à elle,
+se glisse entre le contrat et la recette.
+
+\begin{figure}[H]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  st/.style={draw=accent,fill=accent!7,rounded corners=3pt,minimum width=3.1cm,minimum height=15mm,align=center,font=\sffamily\small,text=ink},
+  co/.style={draw=ochre,fill=ochre!10,rounded corners=3pt,minimum width=3.1cm,minimum height=15mm,align=center,font=\sffamily\small,text=ink},
+  num/.style={circle,fill=accent,text=white,font=\sffamily\bfseries\footnotesize,inner sep=2pt},
+  ar/.style={-{Stealth[length=2.2mm]},thick,accent}]
+  \node[st] (a) at (0,0)   {\textbf{Cadrage}\\[-1pt]{\scriptsize forge-cadrage}};
+  \node[st] (b) at (3.8,0) {\textbf{Domaine}\\[-1pt]{\scriptsize forge-domaine}};
+  \node[st] (c) at (7.6,0) {\textbf{Spécification}\\[-1pt]{\scriptsize forge-spec}};
+  \node[st] (d) at (11.4,0){\textbf{Architecture}\\[-1pt]{\scriptsize forge-architecture}};
+  \node[st] (e) at (11.4,-2.6){\textbf{Contrat d'API}\\[-1pt]{\scriptsize forge-contrat}};
+  \node[co] (f) at (7.6,-2.6){\textbf{Code}\\[-1pt]{\scriptsize forge-implemente}};
+  \node[st] (g) at (3.8,-2.6){\textbf{Recette}\\[-1pt]{\scriptsize forge-recette}};
+  \node[st] (h) at (0,-2.6){\textbf{Production}\\[-1pt]{\scriptsize forge-prod}};
+  \node[num] at (a.north west) {0}; \node[num] at (b.north west) {1}; \node[num] at (c.north west) {2};
+  \node[num] at (d.north west) {3}; \node[num] at (e.north west) {4}; \node[num] at (g.north west) {5}; \node[num] at (h.north west) {6};
+  \draw[ar] (a)--(b); \draw[ar] (b)--(c); \draw[ar] (c)--(d); \draw[ar] (d)--(e);
+  \draw[ar] (e)--(f); \draw[ar] (f)--(g); \draw[ar] (g)--(h);
+  \draw[ar,dashed,grey] (h.south) -- ++(0,-8mm) -| node[pos=.25,below,font=\sffamily\scriptsize,text=grey]{lot suivant : retour au cadrage} ([xshift=-8mm]a.south west) |- (a.west);
+\end{tikzpicture}}
+\caption{Le chemin de la démarche : sept étapes validées, et le code entre le contrat et la recette.}
+\end{figure}
+
+À côté de ce chemin, trois skills transversaux : \skill{forge-init} (démarrer), \skill{forge-statut}
+(où en suis-je ?) et \skill{forge-rapide} (le cycle court des petites fonctionnalités, chapitre~\ref{ch:rapide}).
 
 \section{Ce que le plugin ne fait pas}
-Il ne déploie jamais en production de lui-même, ne valide aucune spécification, ne pousse
-aucun code sans demande et n'invente aucune règle métier : quand une information manque,
-il pose la question.
+Il ne déploie jamais en production de lui-même, ne valide aucune spécification, ne pousse aucun
+code sans demande et n'invente aucune règle métier : quand une information manque, il pose la
+question. C'est volontaire. La validation engage une responsabilité (celle du client, ou la
+vôtre) ; elle ne se délègue pas à un outil.
+
+\begin{piege}[Piège : « l'assistant l'a validé »]
+Un assistant peut passer un statut à \emph{Validée} en une ligne ; le script, lui, le croira.
+C'est pourquoi le plugin lui interdit de le faire : la ligne \emph{Validé par} porte un nom et
+une date \emph{humains}. Une spec validée par personne est une spec non validée.
+\end{piege}
+
+\begin{vousjouez}[À vous de jouer]
+Prenez un projet que vous avez vécu et qui a dérapé. En une phrase chacune, laquelle de ces trois causes
+l'explique le mieux : \emph{mauvaise chose construite}, \emph{malentendu}, \emph{décision tardive non dite} ?
+Notez-la dans votre carnet : vous y reviendrez aux chapitres~\ref{ch:cadrage}, \ref{ch:domaine} et \ref{ch:archi}.
+\end{vousjouez}
+
+\begin{retenir}[À retenir]
+\begin{itemize}
+  \item Trois risques : mauvaise chose, malentendu, décision tardive.
+  \item Les \emph{skills} guident ; les \emph{garde-fous} contrôlent ; l'\emph{humain} valide.
+  \item Sept étapes, un livrable validé chacune, le code entre le contrat et la recette.
+\end{itemize}
+\end{retenir}
 \source{README.md}
+
+\begin{acquis}
+  \item Quelle différence y a-t-il entre un skill et un garde-fou ?
+  \item Qui peut passer une spécification au statut \emph{Validée} ?
+  \item Dans quel ordre viennent le contrat d'API et le code ?
+\end{acquis}

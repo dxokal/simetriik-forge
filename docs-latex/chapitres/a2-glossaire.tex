@@ -1,15 +1,19 @@
-\chapter{Glossaire}
+\chapter{Glossaire}\label{app:glossaire}
 \begin{description}[style=nextline]
   \item[ADR] \emph{Architecture Decision Record} : fiche qui consigne une décision structurante (contexte, options chiffrées, décision, conséquences).
+  \item[AGENTS.md] Fichier de consignes relu par l'assistant de code à chaque session.
   \item[Bounded context] Frontière à l'intérieur de laquelle un modèle et son vocabulaire sont cohérents.
-  \item[C4] Modèle de documentation d'architecture en quatre niveaux (contexte, conteneurs, composants, code).
+  \item[C4] Documentation d'architecture en quatre niveaux : contexte, conteneurs, composants, code.
   \item[Context map] Carte des bounded contexts et de leurs relations.
+  \item[Cycle court] Parcours allégé pour une petite fonctionnalité (une règle, taille S), contrôlé par un garde-fou d'éligibilité.
   \item[Event Storming] Atelier de modélisation du domaine à partir des événements métier.
-  \item[Fitness function] Contrôle automatique, exécuté en CI, qui protège une propriété d'architecture (FF-01\dots FF-05).
+  \item[Fitness function] Contrôle automatique, exécuté en CI, qui protège une propriété d'architecture (FF-01 à FF-05).
+  \item[Garde-fou] Script déterministe qui échoue quand une règle de la démarche est violée.
   \item[Gherkin] Langage d'exemples (Étant donné / Quand / Alors) qui sert de critère d'acceptation et de test.
   \item[Impact map] Chaîne objectif $\rightarrow$ acteur $\rightarrow$ comportement $\rightarrow$ fonctionnalité.
   \item[Langage omniprésent] Vocabulaire unique partagé par le métier et le code (glossaire).
   \item[MoSCoW] Priorisation : Must, Should, Could, Won't.
+  \item[Objectif mesurable] Objectif avec indicateur, valeur actuelle, cible et échéance.
   \item[OpenAPI] Description normalisée d'une API ; ici, écrite \emph{avant} le code.
   \item[PV de recette] Procès-verbal signé par le client qui clôt la recette.
   \item[Skill] Instruction de travail que l'assistant de code suit pour une étape.

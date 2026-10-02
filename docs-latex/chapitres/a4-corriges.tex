@@ -1,0 +1,75 @@
+\chapter{Corrigés des auto-évaluations}\label{app:corriges}
+Comparez vos réponses, puis relisez le chapitre indiqué si un point vous échappe.
+
+\section*{Chapitre~\ref{ch:demarche} --- Pourquoi une démarche}
+\begin{enumerate}[label=\sffamily\bfseries\color{leaf}Q\arabic*.,leftmargin=2.2em]
+  \item Un skill \emph{guide} l'assistant (questions, gabarits) ; un garde-fou \emph{contrôle} un fait et échoue si la règle est violée.
+  \item Un humain, avec son nom et la date. Jamais l'assistant.
+  \item Le contrat d'API d'abord ; le code ensuite.
+\end{enumerate}
+\section*{Chapitre~\ref{ch:prise} --- Prise en main}
+\begin{enumerate}[label=\sffamily\bfseries\color{leaf}Q\arabic*.,leftmargin=2.2em]
+  \item Le skill s'arrête et le signale : il n'écrase jamais.
+  \item Choisir la stack est une décision d'architecture (étape~3, ADR), à prendre après le cadrage et le domaine.
+  \item Le livrable doit être \emph{Validée} (ADR : \emph{Acceptée}) ; pour l'architecture, au moins deux ADR acceptés.
+\end{enumerate}
+\section*{Chapitre~\ref{ch:cadrage} --- Cadrage}
+\begin{enumerate}[label=\sffamily\bfseries\color{leaf}Q\arabic*.,leftmargin=2.2em]
+  \item Il n'a ni indicateur, ni valeur actuelle, ni cible, ni échéance : on ne saura jamais s'il est atteint.
+  \item Il la signale hors périmètre.
+  \item Le sponsor client.
+\end{enumerate}
+\section*{Chapitre~\ref{ch:domaine} --- Domaine}
+\begin{enumerate}[label=\sffamily\bfseries\color{leaf}Q\arabic*.,leftmargin=2.2em]
+  \item Il décrit un fait déjà survenu (\q{Cotisation confirmée}), ce qui oblige à nommer ce qui s'est réellement passé.
+  \item Les synonymes à proscrire ; le script \cmd{check-glossary-terms.sh} les cherche dans le code.
+  \item Pour que le cœur ne parle jamais le langage ni les particularités d'un opérateur Mobile Money.
+\end{enumerate}
+\section*{Chapitre~\ref{ch:spec} --- Spécification}
+\begin{enumerate}[label=\sffamily\bfseries\color{leaf}Q\arabic*.,leftmargin=2.2em]
+  \item Il l'inscrit en \emph{Questions ouvertes} et vous la demande.
+  \item Uniquement le statut : la complétude se relit à la main.
+  \item Au moins trois : un nominal, un limite, un d'erreur.
+\end{enumerate}
+\section*{Chapitre~\ref{ch:archi} --- Architecture}
+\begin{enumerate}[label=\sffamily\bfseries\color{leaf}Q\arabic*.,leftmargin=2.2em]
+  \item Par exemple : la stack, l'hébergement, la base de données, une dépendance majeure, le découpage en modules.
+  \item Un nouvel ADR qui remplace l'ADR-0001.
+  \item FF-01.
+\end{enumerate}
+\section*{Chapitre~\ref{ch:contrat} --- Contrat et code}
+\begin{enumerate}[label=\sffamily\bfseries\color{leaf}Q\arabic*.,leftmargin=2.2em]
+  \item La référence \cmd{(SPEC-NNN)} de la spec dont il découle.
+  \item Les entiers évitent les erreurs d'arrondi ; le FCFA n'a pas de centime en usage courant et se compte en entiers (\cmd{amountXof}).
+  \item Poser la question ; ne pas deviner la règle.
+\end{enumerate}
+\section*{Chapitre~\ref{ch:recette} --- Recette}
+\begin{enumerate}[label=\sffamily\bfseries\color{leaf}Q\arabic*.,leftmargin=2.2em]
+  \item Specs \emph{Validée}, scénarios automatisés verts en CI, jeu de données anonymisé.
+  \item Le responsable recette du client, jamais l'assistant.
+  \item On la corrige sous 48\,h ouvrées : reproduire, chercher la cause racine, corriger le minimum, rejouer le scénario.
+\end{enumerate}
+\section*{Chapitre~\ref{ch:prod} --- Production}
+\begin{enumerate}[label=\sffamily\bfseries\color{leaf}Q\arabic*.,leftmargin=2.2em]
+  \item Le PV de recette signé par le client et aucune anomalie bloquante.
+  \item Parce qu'un déclencheur vague ne se mesure pas : on ne sait pas quand l'appliquer.
+  \item CI/CD, Docker, \cmd{.env}, migrations ou données de production, \cmd{git push}, service payant.
+\end{enumerate}
+\section*{Chapitre~\ref{ch:rapide} --- Cycle court}
+\begin{enumerate}[label=\sffamily\bfseries\color{leaf}Q\arabic*.,leftmargin=2.2em]
+  \item Par exemple : nouvelle dépendance, migration de données, plus d'une règle métier.
+  \item Non : seul un humain la valide.
+  \item Le travail a dépassé le cadre ; basculez vers le cycle complet.
+\end{enumerate}
+\section*{Chapitre~\ref{ch:git} --- Git}
+\begin{enumerate}[label=\sffamily\bfseries\color{leaf}Q\arabic*.,leftmargin=2.2em]
+  \item Les commits qui ne touchent que \cmd{docs/}, \cmd{.github/}, \cmd{scripts/}, \cmd{tests/} ou des fichiers \cmd{.md}, et ceux des branches \cmd{fix/}.
+  \item Parce qu'il saute le hook local ; seule une CI côté serveur rend la règle absolue.
+  \item En anglais.
+\end{enumerate}
+\section*{Chapitre~\ref{ch:apprendre} --- Apprentissage}
+\begin{enumerate}[label=\sffamily\bfseries\color{leaf}Q\arabic*.,leftmargin=2.2em]
+  \item Dans \cmd{apprentissage/}, pour ne pas toucher au vrai dossier de conception.
+  \item La qualité du contenu : seulement la présence et le statut.
+  \item Leçon~1 $\to$ \skill{forge-cadrage} ; 2 $\to$ \skill{forge-domaine} ; 3 $\to$ \skill{forge-spec} ; 4 $\to$ \skill{forge-architecture}.
+\end{enumerate}

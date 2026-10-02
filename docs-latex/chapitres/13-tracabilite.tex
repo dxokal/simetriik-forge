@@ -1,0 +1,65 @@
+\chapter{La chaîne de traçabilité}\label{ch:trace}
+
+\begin{objectifs}[Objectifs]
+\begin{itemize}
+  \item suivre un objectif jusqu'à son indicateur de production, et inversement ;
+  \item repérer à quelle étape une rupture de la chaîne se détecte ;
+  \item répondre à la question : « pourquoi ce code existe-t-il ? »
+\end{itemize}
+\end{objectifs}
+
+Tout ce manuel converge vers une idée : \emph{chaque ligne de code doit pouvoir justifier son existence}. Voici, pour \sika{}, le chemin complet
+d'un objectif, de la première réunion à la mesure en production.
+
+\begin{figure}[H]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  n/.style={draw,rounded corners=3pt,align=center,font=\sffamily\small,minimum width=3.3cm,minimum height=13mm},
+  c0/.style={n,fill=accent!8,draw=accent},
+  c1/.style={n,fill=ochre!12,draw=ochre},
+  c2/.style={n,fill=leaf!12,draw=leaf},
+  ar/.style={-{Stealth},thick,grey},
+  l/.style={font=\sffamily\scriptsize,text=grey,align=center}]
+  \node[c0] (o) at (0,0) {\textbf{O1}\\cotisations contestées};
+  \node[c0] (f) at (4.4,0) {\textbf{Fonctionnalité}\\Cotiser par MoMo};
+  \node[c1] (s) at (8.8,0) {\textbf{SPEC-001}\\règle R2};
+  \node[c1] (g) at (13.2,0) {\textbf{.feature}\\scénario \q{Confirmation}};
+  \node[c2] (a) at (13.2,-2.6) {\textbf{openapi.yaml}\\submitContribution};
+  \node[c2] (t) at (8.8,-2.6) {\textbf{Test}\\\texttt{test\_confirm...}};
+  \node[c2] (r) at (4.4,-2.6) {\textbf{Recette}\\SC-02};
+  \node[c0] (m) at (0,-2.6) {\textbf{Production}\\\% contestées à J+30};
+  \draw[ar] (o)--(f); \draw[ar] (f)--(s); \draw[ar] (s)--(g); \draw[ar] (g)--(a); \draw[ar] (a)--(t); \draw[ar] (t)--(r); \draw[ar] (r)--(m);
+  \draw[ar,dashed,accent] (m.north)--(o.south) node[midway,right,l]{boucle de retour};
+\end{tikzpicture}}
+\caption{La chaîne de traçabilité d'un objectif de \sika{} : chaque maillon est contrôlé par un artefact ou un garde-fou.}
+\end{figure}
+
+\section{Où une rupture se détecte}
+\noindent\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{4.6cm}X}
+\toprule
+\textbf{Rupture} & \textbf{Détectée par} \\ \midrule
+Fonctionnalité sans objectif & colonne « Objectif » de l'impact map, \skill{forge-cadrage} \\
+Terme utilisé sous deux noms & \cmd{check-glossary-terms.sh} (FF-05) \\
+Code sans spec validée & hook \emph{pre-commit}, \cmd{check-spec-validated.sh} \\
+Opération d'API sans spec & \cmd{check-openapi-first.sh} \\
+Décision sans trace & \cmd{check-adr-present.sh}, ADR \\
+Contexte qui en importe un autre & FF-01 en CI \\
+Travail qui déborde du cycle court & \cmd{check-rapide-eligible.sh} \\
+Production sans mesure & plan de monitoring, revues J+7 et J+30 \\
+\bottomrule
+\end{tabularx}
+
+\section{Votre carnet de bord, version finale}
+\begin{vousjouez}[À vous de jouer : votre propre chaîne]
+Choisissez \emph{une} fonctionnalité de votre projet. Écrivez, à la main, les huit maillons de la figure ci-dessus avec les identifiants réels : objectif,
+spec, règle, scénario, opération, test, scénario de recette, indicateur. S'il vous manque un maillon, vous venez de trouver la prochaine tâche du projet.
+\end{vousjouez}
+
+\begin{retenir}[À retenir]
+\begin{itemize}
+  \item Chaque ligne de code remonte à une règle, une spec, une fonctionnalité, un objectif.
+  \item Les garde-fous contrôlent les maillons mécaniques ; la relecture humaine contrôle le sens.
+  \item La boucle se ferme : la mesure en production nourrit le cadrage du lot suivant.
+\end{itemize}
+\end{retenir}
