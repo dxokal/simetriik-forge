@@ -1,38 +1,155 @@
-\documentclass[11pt,a4paper,oneside]{book}
+% Manuel de l'ingénieur — Simetriik Forge (KOMA-Script, XeLaTeX)
+\documentclass[a4paper,11pt,twoside,openany,DIV=calc,parskip=half-,
+  headings=big,numbers=noenddot,toc=listof]{scrbook}
 \usepackage{fontspec}
-\setmonofont{DejaVu Sans Mono}[Scale=MatchLowercase]
+\setmainfont{Libertinus Serif}
+\setsansfont{Fira Sans}
+\setmonofont{Fira Mono}[Scale=MatchLowercase]
 \usepackage[french]{babel}
-\usepackage[margin=2.4cm]{geometry}
-\usepackage{graphicx,xcolor,listings,booktabs,tabularx,enumitem,fancyhdr,titlesec,tikz}
-\usepackage[hidelinks,plainpages=false,hypertexnames=false]{hyperref}
-\usetikzlibrary{shapes.geometric,arrows.meta,positioning}
-\emergencystretch=4em\sloppy
-\definecolor{accent}{HTML}{1F4E79}
-\definecolor{codebg}{HTML}{F4F6F8}
-\lstset{basicstyle=\ttfamily\small,backgroundcolor=\color{codebg},frame=single,
-  rulecolor=\color{accent!30},breaklines=true,columns=fixed,keepspaces=true,
-  literate={é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {à}{{\`a}}1 {É}{{\'E}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {ù}{{\`u}}1 {ç}{{\c c}}1 {…}{{...}}1 {→}{{->}}1}
-\titleformat{\chapter}{\Huge\bfseries\color{accent}}{\thechapter}{0.6em}{}
-\pagestyle{fancy}\fancyhf{}\fancyhead[L]{\small Simetriik Forge}\fancyhead[R]{\small\leftmark}\fancyfoot[C]{\thepage}
-\newcommand{\cmd}[1]{\texttt{\detokenize{#1}}}
-\newcommand{\source}[1]{\par\noindent{\small\itshape Source : \texttt{\detokenize{#1}} --- à mettre à jour avec le skill.}\par\medskip}
-\newcommand{\astuce}[1]{\par\medskip\noindent\fcolorbox{accent}{accent!6}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{\textbf{À retenir.} #1}}\par\medskip}
-\title{\includegraphics[width=3.5cm]{../assets/logo.png}\\[1.2em]\textbf{Simetriik Forge}\\[0.4em]\large Guide de l'ingénieur : pratiquer la démarche Lumière\\du besoin à la mise en production}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{graphicx,booktabs,tabularx,colortbl,enumitem,float}
+\usepackage[obeyspaces]{url}
+\newcolumntype{X}{>{\raggedright\arraybackslash}X}
+\usepackage{fancyvrb,fvextra}
+\usepackage[skins,breakable]{tcolorbox}
+\usepackage{tikz,pifont}
+\usetikzlibrary{shapes.geometric,arrows.meta,positioning,calc,fit,backgrounds,decorations.pathmorphing}
+\usepackage[hidelinks,pdfusetitle]{hyperref}
+\usepackage{scrlayer-scrpage}
+
+\emergencystretch=3em
+\raggedbottom
+
+% ---------- Palette ----------
+\definecolor{accent}{HTML}{1F4E79}    % bleu enclume (logo)
+\definecolor{accentl}{HTML}{5B9BD5}   % bleu clair (logo)
+\definecolor{ochre}{HTML}{B7791F}     % fil rouge Sika
+\definecolor{leaf}{HTML}{2E7D5B}      % exercices
+\definecolor{brick}{HTML}{B03A2E}     % pièges
+\definecolor{ink}{HTML}{1C2430}
+\definecolor{codebg}{HTML}{F3F5F8}
+\definecolor{grey}{HTML}{6B7785}
+\color{ink}
+
+% ---------- Typographie KOMA ----------
+\setkomafont{disposition}{\sffamily\bfseries\color{accent}}
+\setkomafont{chapter}{\sffamily\bfseries\huge\color{accent}}
+\setkomafont{section}{\sffamily\bfseries\Large\color{accent}}
+\setkomafont{subsection}{\sffamily\bfseries\large\color{accent}}
+\setkomafont{descriptionlabel}{\sffamily\bfseries\color{accent}}
+\setkomafont{caption}{\sffamily\small}
+\setkomafont{captionlabel}{\sffamily\bfseries\small\color{accent}}
+\setkomafont{part}{\sffamily\bfseries\Huge\color{accent}}
+\setkomafont{partnumber}{\sffamily\bfseries\fontsize{70}{70}\selectfont\color{accent!35}}
+\renewcommand*{\chapterformat}{\raisebox{-.15em}{\fontsize{46}{46}\selectfont\color{accentl!70}\thechapter}\enskip}
+\renewcommand*{\chapterheadendvskip}{\vspace*{1.2\baselineskip}}
+\renewcommand*{\partformat}{\partname~\thepart\autodot}
+\setkomafont{pageheadfoot}{\sffamily\small\color{grey}}
+\setkomafont{pagenumber}{\sffamily\small\color{accent}}
+\KOMAoptions{headsepline=true}
+\pagestyle{scrheadings}
+\automark[section]{chapter}
+\clearpairofpagestyles
+\lehead{\pagemark\quad\headmark}
+\rohead{\headmark\quad\pagemark}
+\lofoot{Simetriik Forge}
+\rofoot{Manuel de l'ingénieur}
+\setlength{\parindent}{0pt}
+\setlist{itemsep=2pt,topsep=3pt}
+\renewcommand{\arraystretch}{1.25}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{1}
+
+% ---------- Code et commandes ----------
+\DeclareUrlCommand\cmd{\urlstyle{tt}\def\UrlFont{\ttfamily\small\color{accent!85!black}}}
+\Urlmuskip=0mu plus 1mu\relax
+\def\UrlBreaks{\do\/\do\-\do\_\do\.\do\:}
+\fvset{fontsize=\small,breaklines,breakanywhere,breaksymbolleft={},frame=none}
+\newtcolorbox{code}[1][]{enhanced,breakable,boxrule=0pt,frame hidden,sharp corners,
+  colback=codebg,borderline west={2.5pt}{0pt}{accentl},left=3mm,right=2mm,top=1mm,bottom=1mm,
+  fontupper=\small,before skip=6pt,after skip=8pt,#1}
+\newcommand{\legende}[1]{\par\vspace{-3pt}{\sffamily\scriptsize\color{grey}#1}\par\vspace{4pt}}
+
+% ---------- Pastilles andragogiques ----------
+\newcommand{\encadre}[3]{% #1 nom, #2 couleur, #3 libellé
+  \newtcolorbox{#1}[1][]{enhanced,colback=#2!5,colframe=#2,boxrule=0pt,
+    sharp corners=south,arc=2pt,borderline west={3pt}{0pt}{#2},
+    left=3mm,right=3mm,top=2mm,bottom=2mm,before skip=8pt,after skip=10pt,
+    title={##1},attach boxed title to top left={xshift=-1mm,yshift=-2mm},
+    boxed title style={colback=#2,colframe=#2,sharp corners,left=2mm,right=2mm,top=.5mm,bottom=.5mm},
+    fonttitle=\sffamily\bfseries\small\color{white},coltitle=white}}
+\encadre{objectifs}{accent}{}
+\encadre{situation}{ochre}{}
+\encadre{concept}{accentl!80!black}{}
+\encadre{piege}{brick}{}
+\encadre{vousjouez}{leaf}{}
+\encadre{retenir}{accent}{}
+
+% Pictos simples (pas de dépendance à une police d'icônes)
+\newcommand{\sika}{\textbf{Sika}}
+\newcommand{\q}[1]{\og #1\fg{}}
+\newcommand{\FCFA}[1]{#1\,FCFA}
+\newcommand{\skill}[1]{\texttt{\color{accent}#1}}
+\newcommand{\source}[1]{\par\vspace{1ex}{\raggedright\sffamily\scriptsize\color{grey}Maintenance : à garder synchronisé avec {\ttfamily\detokenize{#1}}.\par}}
+\newenvironment{acquis}{\begin{vousjouez}[Vérifiez vos acquis]\begin{enumerate}[label=\sffamily\bfseries\color{leaf}Q\arabic*.,leftmargin=2.2em]}{\end{enumerate}{\small\itshape Réponses en annexe~\ref{app:corriges}.}\end{vousjouez}}
+
+% ---------- Page de titre ----------
+\title{Simetriik Forge}
+\subtitle{Le manuel de l'ingénieur}
 \author{Simetriik Solutions}
-\date{\today}
+\date{Version du plugin : 0.2.1 \textbullet{} \today}
+\hypersetup{pdftitle={Simetriik Forge — Manuel de l'ingénieur},pdfauthor={Simetriik Solutions}}
+
 \begin{document}
 \frontmatter
-\maketitle
-{\small\tableofcontents}
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[accent] (current page.north west) rectangle ([yshift=-15.5cm]current page.north east);
+  \fill[accentl] ([yshift=-15.5cm]current page.north west) rectangle ([yshift=-15.9cm]current page.north east);
+  \foreach \i in {0,...,6}{\fill[white,opacity=.07] ([xshift=\i*3cm-1cm,yshift=-15.5cm]current page.north west) -- ++(1.5cm,0) -- ++(-1.5cm,8cm) -- ++(-1.5cm,0) -- cycle;}
+\end{tikzpicture}
+\vspace*{1.2cm}
+\begin{center}
+  \includegraphics[width=3.4cm]{../assets/logo-dark.png}\\[1.6cm]
+  {\sffamily\bfseries\fontsize{44}{48}\selectfont\color{white}Simetriik Forge}\\[.6cm]
+  {\sffamily\LARGE\color{white}Le manuel de l'ingénieur}\\[.5cm]
+  {\sffamily\large\color{white!85!accentl}Pratiquer la démarche Lumière, du besoin à la mise en production}
+\end{center}
+\vfill
+{\sffamily\large\color{accent}\textbf{Un fil rouge :} la plateforme \sika{}, qui dématérialise\\
+les tontines d'une association de commerçantes, étape après étape.}
+\vspace{1.5cm}
+
+{\sffamily\small\color{grey}Simetriik Solutions \textbullet{} Version du plugin 0.2.1 \textbullet{} \today}
+\end{titlepage}
+
+\input{chapitres/00-lire}
+\tableofcontents
+
 \mainmatter
+\part{Comprendre}
 \input{chapitres/01-demarche}
 \input{chapitres/02-prise-en-main}
-\input{chapitres/03-etapes}
-\input{chapitres/04-cycle-court}
-\input{chapitres/05-git}
-\input{chapitres/06-apprentissage}
+\part{Pratiquer, étape par étape}
+\input{chapitres/03-cadrage}
+\input{chapitres/04-domaine}
+\input{chapitres/05-specification}
+\input{chapitres/06-architecture}
+\input{chapitres/07-contrat-code}
+\input{chapitres/08-recette}
+\input{chapitres/09-production}
+\part{Au quotidien}
+\input{chapitres/10-cycle-court}
+\input{chapitres/11-git}
+\input{chapitres/12-apprentissage}
+\input{chapitres/13-tracabilite}
+
 \appendix
+\addpart{Annexes}
 \input{chapitres/a1-reference}
 \input{chapitres/a2-glossaire}
 \input{chapitres/a3-depannage}
+\input{chapitres/a4-corriges}
 \end{document}

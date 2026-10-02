@@ -1,0 +1,78 @@
+\addchap{Comment lire ce manuel}
+
+Ce manuel s'adresse à vous, ingénieur ou ingénieure, qui avez déjà livré des logiciels et
+qui découvrez la démarche \emph{Lumière} et son plugin \textbf{Simetriik Forge}. Vous n'avez pas besoin
+de tout lire dans l'ordre, ni de tout retenir : il est construit pour que vous pratiquiez vite, sur
+un vrai projet, et que vous reveniez aux pages utiles quand le besoin se présente.
+
+\section*{Ce que vous saurez faire}
+\begin{itemize}
+  \item cadrer un besoin en objectifs mesurables, et refuser une fonctionnalité qui n'en sert aucun ;
+  \item bâtir un langage commun entre métier et code, et le faire respecter automatiquement ;
+  \item écrire une spécification que le client peut valider et qu'un test peut vérifier ;
+  \item consigner une décision d'architecture, chiffrée en FCFA, pour que personne ne la rediscute dans six mois ;
+  \item déclencher la recette et la production sans improviser ;
+  \item savoir \emph{pourquoi} un garde-fou vous refuse un commit, et quoi faire ensuite.
+\end{itemize}
+
+\section*{Un fil rouge : la plateforme Sika}
+Tout au long du manuel, un même projet fictif sert d'exemple : \sika{}, une plateforme qui permet aux
+groupes de tontine d'une association de commerçantes de cotiser par Mobile Money au lieu de
+passer par un cahier et des espèces. Vous le suivrez de la première conversation avec la
+présidente jusqu'à la revue post-production. Chaque concept est d'abord défini, puis
+illustré sur \sika{}, puis proposé à votre propre projet.
+
+\begin{situation}[Fiction]
+\sika{}, l'association, les montants et les noms qui l'entourent sont inventés pour les besoins du
+manuel. Les chiffres (coûts, taux, délais) illustrent un raisonnement ; ils ne sont pas des
+recommandations et ne doivent pas être recopiés tels quels.
+\end{situation}
+
+\section*{Comment un chapitre est construit}
+Les adultes apprennent mieux quand ils savent \emph{pourquoi} ils apprennent, partent de leur
+expérience et appliquent tout de suite. Chaque chapitre d'étape suit donc le même rythme,
+repérable à ses encadrés.
+
+\begin{objectifs}[Objectifs]
+Ce que vous serez capable de faire à la fin du chapitre, énoncé en verbes d'action.
+\end{objectifs}
+\begin{situation}[Sur le terrain : \sika{}]
+Une scène du projet fil rouge, pour poser le problème avant la théorie.
+\end{situation}
+\begin{concept}[Concept]
+La définition précise d'un mot de la démarche. Un seul sens, relu à chaque chapitre.
+\end{concept}
+\begin{piege}[Piège]
+Une erreur fréquente, et comment l'éviter.
+\end{piege}
+\begin{vousjouez}[À vous de jouer]
+Un exercice court à refaire sur \emph{votre} projet, tout de suite.
+\end{vousjouez}
+\begin{retenir}[À retenir]
+L'essentiel en quelques lignes, à relire quand vous revenez au chapitre.
+\end{retenir}
+
+Chaque chapitre d'étape se termine par quelques questions d'auto-évaluation
+(« Vérifiez vos acquis »), dont les réponses commentées figurent en annexe~\ref{app:corriges}.
+
+\section*{Trois parcours de lecture}
+\noindent\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash\bfseries\color{accent}}p{3.2cm}X}
+\toprule
+Je découvre & Lisez les chapitres \ref{ch:demarche} et \ref{ch:prise} dans l'ordre, puis les étapes une à une. Appliquez chaque « À vous de jouer » avant de passer au chapitre suivant. \\
+Je connais Lumière & Parcourez le chapitre \ref{ch:prise}, puis allez à l'étape qui vous bloque. L'annexe~\ref{app:ref} liste tous les skills et scripts. \\
+Je suis pressé(e) & Une petite fonctionnalité ? Chapitre \ref{ch:rapide}. Un commit refusé ? Annexe~\ref{app:depannage}. \\
+\bottomrule
+\end{tabularx}
+
+\section*{Conventions}
+\begin{itemize}
+  \item Les commandes, chemins et noms de fichiers sont en \texttt{police à chasse fixe}. Les skills s'invoquent par leur nom, par exemple \skill{forge-cadrage}.
+  \item Le code, les noms de fichiers et les routes sont en anglais ; les commentaires et la documentation, en français.
+  \item Les sorties de scripts reproduites ici ont été obtenues en exécutant réellement les garde-fous sur un projet d'essai.
+\end{itemize}
+
+\begin{retenir}[Votre carnet de bord]
+Gardez un projet réel sous la main et un carnet ouvert : notez, à chaque « À vous de jouer »,
+ce qui s'applique à votre contexte et ce qui ne s'y applique pas. Une démarche ne devient la
+vôtre que lorsque vous l'avez adaptée.
+\end{retenir}

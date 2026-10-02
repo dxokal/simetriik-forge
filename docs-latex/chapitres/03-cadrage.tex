@@ -1,0 +1,140 @@
+\chapter{Cadrer le besoin}\label{ch:cadrage}
+
+\begin{objectifs}[Objectifs --- étape 0, \texttt{forge-cadrage}]
+\begin{itemize}
+  \item formuler une vision produit et des objectifs \emph{mesurables} ;
+  \item construire une impact map reliant pourquoi, qui, comment et quoi ;
+  \item prioriser avec MoSCoW et écarter ce qui ne sert aucun objectif ;
+  \item reconnaître un chiffre inconnu et le noter \q{À mesurer} plutôt que de l'inventer.
+\end{itemize}
+\end{objectifs}
+
+\begin{situation}[Sur le terrain : \sika{}]
+Retour chez la présidente. Cette fois, avant tout écran, on pose des questions : combien de
+groupes ? combien de membres ? combien de cotisations sont contestées chaque semaine ? La
+trésorière générale a compté sur trois mois : 12\,\% des cotisations ont été discutées. Elle ne sait en
+revanche pas combien de temps s'écoule entre la dernière cotisation et la remise du pot. Deux
+objectifs émergent --- l'un avec un chiffre, l'autre sans.
+\end{situation}
+
+\section{Le concept : relier chaque fonctionnalité à un objectif}
+\begin{concept}[Objectif mesurable]
+Un objectif qui contient un \emph{indicateur}, une \emph{valeur actuelle}, une \emph{cible} et une
+\emph{échéance}. \q{Améliorer la confiance} n'est pas mesurable ; \q{passer de 12\,\% à moins de 2\,\% de
+cotisations contestées en six mois} l'est.
+\end{concept}
+
+\begin{concept}[Impact map]
+Une carte à quatre niveaux qui relie le \emph{pourquoi} (l'objectif) au \emph{quoi} (la fonctionnalité)
+par le \emph{qui} (l'acteur) et le \emph{comment} (le changement de comportement visé). Sa règle
+d'or : une fonctionnalité qui ne remonte à aucun objectif sort du périmètre.
+\end{concept}
+
+\section{Pas à pas avec \texttt{forge-cadrage}}
+Le skill vous interroge \emph{une question à la fois}, dans cet ordre :
+\begin{enumerate}
+  \item pour qui, et quel problème ;
+  \item la situation actuelle, le cadre réglementaire (APDP, OHADA, marchés publics), les contraintes terrain (connectivité, terminaux, langues) ;
+  \item les objectifs mesurables : indicateur, valeur actuelle, cible, échéance ;
+  \item les acteurs, puis les changements de comportement ;
+  \item enfin les fonctionnalités.
+\end{enumerate}
+Il renseigne ensuite \cmd{vision.md}, puis l'impact map (un diagramme et un tableau de priorisation).
+Le livrable passe \emph{En revue} ; la validation revient au \textbf{sponsor client}, pas à l'ingénieur.
+
+\section{Ce que \sika{} produit}
+\subsection*{La vision}
+\begin{code}
+\begin{Verbatim}
+Pour les groupes de tontine de l'Association Entraide
+Dantokpa qui rapprochent chaque semaine un cahier et des
+espèces, Sika est une plateforme de cotisation par Mobile
+Money qui rend chaque cotisation vérifiable. Contrairement
+au cahier, chaque cotisation y est horodatée et confirmée
+par l'opérateur.
+\end{Verbatim}
+\end{code}
+
+\subsection*{Les objectifs}
+\noindent\begin{tabularx}{\linewidth}{lXlll}
+\toprule
+\textbf{\#} & \textbf{Objectif et indicateur} & \textbf{Actuel} & \textbf{Cible} & \textbf{Échéance} \\ \midrule
+O1 & Rendre les cotisations indiscutables : \% de cotisations contestées & 12\,\% & $<2\,\%$ & 6 mois \\
+O2 & Remettre le pot plus vite : délai de remise du pot & \textit{À mesurer} & $\le 24$\,h & 6 mois \\
+\bottomrule
+\end{tabularx}
+
+\begin{piege}[Piège : inventer le chiffre qui manque]
+Pour O2, personne ne connaît la valeur actuelle. Écrire \q{3 jours} \emph{parce que ça semble juste}
+fausse toute la mesure future. Le skill note \emph{À mesurer} ; la première tâche du projet sera de
+mesurer.
+\end{piege}
+
+\subsection*{L'impact map}
+\begin{figure}[H]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  n/.style={draw,rounded corners=3pt,align=center,font=\sffamily\small,minimum height=11mm,text width=3.2cm,inner sep=3pt},
+  g/.style={n,fill=accent,draw=accent,text=white},
+  a/.style={n,fill=accentl!20,draw=accentl},
+  i/.style={n,fill=ochre!12,draw=ochre},
+  d/.style={n,fill=leaf!12,draw=leaf},
+  ar/.style={-{Stealth},thick,grey},
+  h/.style={font=\sffamily\bfseries\scriptsize,text=grey}]
+  \node[h] at (0,2.3) {POURQUOI}; \node[h] at (4.3,2.3) {QUI}; \node[h] at (8.6,2.3) {COMMENT}; \node[h] at (12.9,2.3) {QUOI};
+  \node[g] (o1) at (0,0.9) {O1\\cotisations contestées $<2\,\%$};
+  \node[g] (o2) at (0,-1.9) {O2\\pot remis en $\le 24$\,h};
+  \node[a] (m) at (4.3,1.3) {Membre};
+  \node[a] (t) at (4.3,-1.3) {Trésorière de groupe};
+  \node[i] (i1) at (8.6,1.3) {Cotise depuis son téléphone, avec preuve};
+  \node[i] (i2) at (8.6,-1.3) {Suit les cotisations sans pointer le cahier};
+  \node[d] (d1) at (12.9,1.7) {Cotiser par Mobile Money};
+  \node[d] (d2) at (12.9,0.4) {Solde du pot en temps réel};
+  \node[d] (d3) at (12.9,-1.9) {Remettre le pot au bénéficiaire};
+  \draw[ar] (o1)--(m); \draw[ar] (o1)--(t); \draw[ar] (o2)--(t);
+  \draw[ar] (m)--(i1); \draw[ar] (t)--(i2);
+  \draw[ar] (i1)--(d1); \draw[ar] (i1)--(d2); \draw[ar] (i2)--(d3);
+\end{tikzpicture}}
+\caption{L'impact map de \sika{} : chaque fonctionnalité remonte à un objectif.}
+\end{figure}
+
+\subsection*{La priorisation MoSCoW}
+\begin{concept}[MoSCoW]
+Quatre niveaux de priorité : \textbf{M}ust (indispensable au lot), \textbf{S}hould (important, pas bloquant),
+\textbf{C}ould (utile si le temps le permet), \textbf{W}on't (explicitement hors lot).
+\end{concept}
+\noindent\begin{tabularx}{\linewidth}{Xcll}
+\toprule
+\textbf{Fonctionnalité} & \textbf{Objectif} & \textbf{Priorité} & \textbf{Lot} \\ \midrule
+Cotiser par Mobile Money & O1 & Must & Lot 1 \\
+Solde du pot en temps réel & O1 & Should & Lot 1 \\
+Remettre le pot au bénéficiaire & O2 & Must & Lot 2 \\
+Rappel SMS avant l'échéance & O1 & Could & Lot 2 \\
+Messagerie vocale intégrée & \textit{aucun} & Won't & hors périmètre \\
+\bottomrule
+\end{tabularx}
+La messagerie vocale, séduisante, ne sert ni O1 ni O2 : le skill la signale \emph{hors périmètre}. C'est exactement
+ce que cette étape est faite pour détecter.
+
+\begin{vousjouez}[À vous de jouer]
+Sur votre projet : écrivez deux objectifs au format indicateur / actuel / cible / échéance. Pour chaque
+chiffre que vous ne connaissez pas, écrivez \emph{À mesurer} et nommez qui peut le mesurer. Dessinez
+ensuite une impact map de cinq nœuds. Y a-t-il une fonctionnalité \q{évidente} qui n'en fait pas partie ?
+\end{vousjouez}
+
+\begin{retenir}[À retenir]
+\begin{itemize}
+  \item Un objectif = indicateur + valeur actuelle + cible + échéance ; sinon il n'est pas mesurable.
+  \item Pas d'objectif \texttt{O\#}, pas de fonctionnalité.
+  \item Inconnu $\Rightarrow$ \emph{À mesurer}, jamais un chiffre inventé.
+  \item Le sponsor client valide le cadrage.
+\end{itemize}
+\end{retenir}
+\source{skills/forge-cadrage/SKILL.md}
+
+\begin{acquis}
+  \item Pourquoi \q{améliorer l'expérience des membres} n'est-il pas un objectif exploitable ?
+  \item Que fait le skill d'une fonctionnalité sans objectif \texttt{O\#} ?
+  \item Qui valide le cadrage ?
+\end{acquis}

@@ -4,16 +4,31 @@ cd "$(dirname "$0")/.." || exit 1
 T=templates/docs; F=tests/fixtures; fail=0
 ok()  { "$@" >/dev/null 2>&1 || { echo "FAIL (attendu OK): $*"; fail=1; }; }
 ko()  { "$@" >/dev/null 2>&1 && { echo "FAIL (attendu KO): $*"; fail=1; }; }
-printf '| Champ | Valeur |\n|---|---|\n| Statut | **Validée** |\n' > $F/spec-ok.md
+printf '| Champ | Valeur |\n|---|---|\n| Statut | **Validée** |\n| Validé par | Afi Houngbo, 12/03/2026 |\n' > $F/spec-ok.md
 printf '| Champ | Valeur |\n|---|---|\n| Statut | Brouillon |\n' > $F/spec-draft.md
 ok scripts/check-spec-validated.sh $F/spec-ok.md
 ko scripts/check-spec-validated.sh $F/spec-draft.md
+printf '| Statut | **Validée** |\n' > $F/spec-noby.md
+printf '| Statut | **Validée** |\n| Validé par | [Nom, date] |\n' > $F/spec-placeholder.md
+printf '| Statut | **Validée** |\n| Validé par | Afi Houngbo |\n' > $F/spec-nodate.md
+printf '| Statut | **Validée** |\n| Validé par (métier) | Afi Houngbo, 12/03/2026 |\n| Validé par (tech) | [Nom, date] |\n' > $F/spec-halfby.md
+printf '| Statut | **Validée** |\n| Validé par (métier) | Afi Houngbo, 12/03/2026 |\n| Validé par (tech) | Kossi Adjovi, 2026-03-13 |\n' > $F/spec-twoby.md
+ko scripts/check-spec-validated.sh $F/spec-noby.md
+ko scripts/check-spec-validated.sh $F/spec-placeholder.md
+ko scripts/check-spec-validated.sh $F/spec-nodate.md
+ko scripts/check-spec-validated.sh $F/spec-halfby.md
+ok scripts/check-spec-validated.sh $F/spec-twoby.md
 ko scripts/check-spec-validated.sh $T/02-specs/_TEMPLATE-spec.md
 mkdir -p $F/code-ok $F/code-bad
 echo 'class Application {}' > $F/code-ok/a.ts
 echo 'class Dossier {}'     > $F/code-bad/a.ts
 ok scripts/check-glossary-terms.sh $T/01-domaine/glossaire.md $F/code-ok
 ko scripts/check-glossary-terms.sh $T/01-domaine/glossaire.md $F/code-bad
+mkdir -p $F/code-camel $F/code-clean
+printf 'class DossierService {}\n' > $F/code-camel/a.ts; printf 'const client_id = 1\n' > $F/code-camel/b.ts; printf 'getClientName()\n' > $F/code-camel/c.ts
+printf 'class Clientele {}\nclass HttpClient {} // glossary-ignore\n' > $F/code-clean/a.ts
+for f in a b c; do mkdir -p $F/code-camel-$f && cp $F/code-camel/$f.ts $F/code-camel-$f/; ko scripts/check-glossary-terms.sh $T/01-domaine/glossaire.md $F/code-camel-$f; done
+ok scripts/check-glossary-terms.sh $T/01-domaine/glossaire.md $F/code-clean
 mkdir -p $F/specs && cp $F/spec-ok.md $F/specs/SPEC-001.md
 printf 'paths:\n  /a:\n    post:\n      operationId: op1\n      summary: Soumettre (SPEC-001)\n' > $F/api-ok.yaml
 printf 'paths:\n  /a:\n    post:\n      operationId: op1\n      summary: Sans spec\n' > $F/api-nospec.yaml
@@ -24,6 +39,10 @@ ko scripts/check-openapi-first.sh $F/api-ghost.yaml $F/specs
 ok scripts/check-adr-present.sh $T/03-architecture/adr
 mkdir -p $F/adr-empty && cp $T/03-architecture/adr/0000-template.md $F/adr-empty/
 ko scripts/check-adr-present.sh $F/adr-empty
+ok scripts/check-adr-present.sh $T/03-architecture/adr 1
+ko scripts/check-adr-present.sh $T/03-architecture/adr 2
+mkdir -p $F/adr-two && cp $T/03-architecture/adr/0001-*.md $F/adr-two/ && sed 's/ADR-0001/ADR-0002/' $T/03-architecture/adr/0001-*.md > $F/adr-two/0002-stack.md
+ok scripts/check-adr-present.sh $F/adr-two 2
 ok scripts/check-branch.sh feat/x
 ok scripts/check-branch.sh fix/y
 ko scripts/check-branch.sh main
@@ -51,6 +70,16 @@ G=$(mktemp -d); R=$PWD; ( cd $G && git init -q -b main && git config user.email 
   rm package.json; mkdir db && echo x > db/001.sql; $R/scripts/check-rapide-eligible.sh docs/02-specs/SPEC-001.md >/dev/null 2>&1 && { echo "FAIL rapide: migration"; exit 1; }
   rm -r db; sed -i 's/| S |/| M |/' docs/02-specs/SPEC-001.md; $R/scripts/check-rapide-eligible.sh docs/02-specs/SPEC-001.md >/dev/null 2>&1 && { echo "FAIL rapide: taille M"; exit 1; }
   sed -i 's/| M |/| S |/' docs/02-specs/SPEC-001.md; for i in 1 2 3 4 5 6 7 8 9; do echo $i > src/f$i.ts; done; $R/scripts/check-rapide-eligible.sh docs/02-specs/SPEC-001.md >/dev/null 2>&1 && { echo "FAIL rapide: trop de fichiers"; exit 1; }
+  exit 0 ) || fail=1; rm -rf $G
+G=$(mktemp -d); R=$PWD; ( cd $G && git init -q -b main && git config user.email t@t && git config user.name t && mkdir -p docs/02-specs docs/03-architecture/adr src scripts && cp $R/scripts/check-*.sh scripts/
+  cp $R/$F/spec-draft.md docs/02-specs/SPEC-001.md; cp $R/$F/adr-two/*.md docs/03-architecture/adr/; echo a > src/a.ts; git add . && git commit -qm "chore: init"
+  export GITHUB_HEAD_REF=feat/SPEC-001-x; git switch -q -c feat/SPEC-001-x; echo b > src/b.ts; git add . && git commit -qm "feat(api): add b"
+  scripts/check-ci.sh main >/dev/null 2>&1 && { echo "FAIL ci: spec brouillon + code"; exit 1; }
+  cp $R/$F/spec-ok.md docs/02-specs/SPEC-001.md; git add . && git commit -qm "docs: validate SPEC-001"
+  scripts/check-ci.sh main >/dev/null 2>&1 || { echo "FAIL ci: spec validee"; exit 1; }
+  echo c > src/c.ts; git add . && git commit -qm "added stuff"
+  scripts/check-ci.sh main >/dev/null 2>&1 && { echo "FAIL ci: message non conforme"; exit 1; }
+  GITHUB_HEAD_REF=main scripts/check-ci.sh main >/dev/null 2>&1 && { echo "FAIL ci: branche main"; exit 1; }
   exit 0 ) || fail=1; rm -rf $G
 L=$F/lecons; rm -rf $L; mkdir -p $L/apprentissage/code $L/apprentissage/adr
 [ "$(scripts/forge-lecons.sh $L)" = "Leçons [░░░░] 0/4 · prochaine : 01-impact-map" ] || { echo "FAIL lecons 0/4"; fail=1; }

@@ -1,0 +1,16 @@
+# Garde-fous de la démarche en CI : rend les règles absolues (un --no-verify local ne les contourne pas).
+# Réglage du dépôt à faire à la main : exiger ce contrôle et une revue humaine avant fusion sur main.
+name: forge
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  guardrails:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: scripts/check-ci.sh "origin/${{ github.base_ref }}" src

@@ -1,0 +1,135 @@
+\chapter{Le contrat d'API, puis le code}\label{ch:contrat}
+
+\begin{objectifs}[Objectifs --- contrat d'API et implémentation]
+\begin{itemize}
+  \item écrire une opération OpenAPI rattachée à une spécification validée ;
+  \item implémenter en partant d'un test, dans le respect du glossaire et des frontières ;
+  \item appliquer les règles FCFA et dates ;
+  \item reconnaître les vérifications à passer avant de conclure.
+\end{itemize}
+\end{objectifs}
+
+\begin{situation}[Sur le terrain : \sika{}]
+L'équipe mobile et l'équipe API avancent en parallèle. Sans contrat, la PWA attendra un champ
+\cmd{amount} quand l'API enverra \cmd{amountXof} ; l'intégration se fera au dernier jour. Le contrat, écrit
+\emph{avant} le code, est la prise de courant que chacun branche de son côté.
+\end{situation}
+
+\section{Le contrat précède le code}
+\begin{concept}[OpenAPI-first]
+Le fichier \cmd{api/openapi.yaml} décrit chaque opération avant son implémentation. Ici, chaque opération \emph{cite}
+la spécification dont elle découle : le lien contrat $\leftrightarrow$ spécification est vérifié par un script.
+\end{concept}
+
+\subsection*{Les règles du contrat (\texttt{forge-contrat})}
+\begin{itemize}
+  \item \cmd{operationId} en camelCase anglais, avec les termes du glossaire ;
+  \item \cmd{tags} : le bounded context ;
+  \item \cmd{summary} citant \cmd{(SPEC-NNN)} --- c'est ce lien que le script lit ;
+  \item erreurs en \cmd{application/problem+json} ;
+  \item montants : \cmd{integer}, suffixe \cmd{Xof}, \cmd{minimum: 0} ; dates en \cmd{date-time} (UTC) ; identifiants métier avec un \cmd{pattern}.
+\end{itemize}
+Pour \sika{}, l'opération de la SPEC-001 :
+\begin{code}
+\begin{Verbatim}
+/contributions:
+  post:
+    operationId: submitContribution
+    summary: Cotiser pour le tour en cours (SPEC-001)
+    tags: [contribution]
+    responses:
+      "202": { description: Cotisation initiée }
+      "409": { description: Déjà cotisé pour ce tour,
+               content: { application/problem+json: {} } }
+components:
+  schemas:
+    Contribution:
+      properties:
+        reference: { type: string, pattern: "^COT-\d{4}-\d{5}$" }
+        amountXof: { type: integer, minimum: 0, example: 5000 }
+        initiatedAt: { type: string, format: date-time }
+\end{Verbatim}
+\end{code}
+
+\subsection*{Le garde-fou \texttt{check-openapi-first.sh}}
+Si une opération cite une spec absente ou non validée, le script échoue. Sur \sika{}, \cmd{getPotBalance} cite la SPEC-002 qui n'existe pas encore (sortie réelle) :
+\begin{code}
+\begin{Verbatim}
+$ scripts/check-openapi-first.sh api/openapi.yaml docs/02-specs
+KO: getPotBalance → SPEC-002 absente ou non Validée
+\end{Verbatim}
+\end{code}
+Il disparaît lorsque la SPEC-002 est écrite et validée (chapitre~\ref{ch:rapide}).
+
+\begin{concept}[Contrat et test de conformité]
+Le contrat sert aussi de base au test FF-04 (Schemathesis) : l'implémentation est comparée automatiquement au contrat.
+\skill{forge-contrat} rappelle de le brancher en CI.
+\end{concept}
+
+\section{Implémenter avec \texttt{forge-implemente}}
+\subsection*{Avant d'écrire une ligne (bloquant)}
+\begin{enumerate}[start=0]
+  \item \cmd{scripts/check-branch.sh} : une branche \cmd{feat/SPEC-NNN-slug} (jamais \cmd{main}).
+  \item \cmd{scripts/check-spec-validated.sh} : la spec est \emph{Validée}, sinon on s'arrête.
+  \item Lire le glossaire, les ADR \emph{Acceptée} et la context map.
+  \item Le contrat couvre la spec ; sinon on passe par \skill{forge-contrat} d'abord.
+  \item Annoncer un plan court et attendre l'accord.
+\end{enumerate}
+
+\subsection*{Les règles d'implémentation}
+\begin{itemize}
+  \item \textbf{Un scénario Gherkin = au moins un test}, écrit \emph{avant} le code.
+  \item Code en anglais, commentaires en français, noms du glossaire.
+  \item \textbf{FCFA en entiers} (\cmd{amountXof}), jamais de \cmd{float}.
+  \item \textbf{Dates} en UTC au stockage, \cmd{Africa/Porto-Novo} à l'affichage.
+  \item Aucun import direct entre contextes (FF-01) ; aucune dépendance majeure sans ADR.
+  \item Règle absente de la spec : poser la question, ne pas deviner.
+\end{itemize}
+
+Voici le test du scénario \q{Montant différent de celui du groupe} (R1 de la SPEC-001), écrit avant la fonction :
+\begin{code}
+\begin{Verbatim}
+def test_contribution_refused_when_amount_differs_from_group():
+    """R1 (SPEC-001) : le montant doit être celui fixé pour le groupe."""
+    group = SavingsGroup(contribution_amount_xof=5000)
+    with pytest.raises(WrongAmount):
+        group.accept_contribution(member, amount_xof=3000)
+\end{Verbatim}
+\end{code}
+
+\begin{piege}[Piège : adapter le test au code]
+Un test rouge n'est pas un obstacle à contourner : c'est le scénario qui vous parle. Ne jamais affaiblir un test pour le
+faire passer ; si le test est faux, discutez-en d'abord, spec en main.
+\end{piege}
+
+\subsection*{Avant de conclure}
+Lancer le linter et les tests du projet, puis le garde-fou de vocabulaire :
+\cmd{scripts/check-glossary-terms.sh docs/01-domaine/glossaire.md src/}. Un commit porte un seul sujet, un message en anglais au format
+Conventional Commits, et cite la spec :
+\begin{code}
+\begin{Verbatim}
+feat(contribution): refuse a contribution whose amount differs from the group
+
+SPEC-001 R1
+\end{Verbatim}
+\end{code}
+
+\begin{vousjouez}[À vous de jouer]
+Pour la spec de votre projet : écrivez l'opération OpenAPI (\cmd{operationId}, \cmd{summary} avec \cmd{(SPEC-NNN)}, une erreur en
+\cmd{problem+json}). Lancez \cmd{check-openapi-first.sh}. Écrivez ensuite le test du cas d'erreur \emph{avant} la fonction : à quoi ressemble-t-il ?
+\end{vousjouez}
+
+\begin{retenir}[À retenir]
+\begin{itemize}
+  \item Le contrat se modifie avant le code, et chaque opération cite sa spec.
+  \item Un scénario = un test, écrit d'abord.
+  \item FCFA entiers, dates UTC, pas d'import entre contextes.
+\end{itemize}
+\end{retenir}
+\source{skills/forge-contrat/SKILL.md, skills/forge-implemente/SKILL.md}
+
+\begin{acquis}
+  \item Que doit contenir le \cmd{summary} d'une opération ?
+  \item Pourquoi un montant en FCFA n'est-il jamais un \cmd{float} ?
+  \item Que faire quand la spec ne dit rien sur un cas rencontré en codant ?
+\end{acquis}

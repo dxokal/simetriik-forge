@@ -1,10 +1,13 @@
-\chapter{Dépannage}
+\chapter{Dépannage}\label{app:depannage}
 \begin{description}[style=nextline]
   \item[Les skills n'apparaissent pas] Sous Claude Code, vérifier \cmd{--plugin-dir}. Sous Codex ou OpenCode, relancer \cmd{./install.sh} puis redémarrer l'outil.
   \item[\texttt{forge-init} s'arrête] Un dossier \cmd{docs/} ou un fichier \cmd{AGENTS.md} existe déjà : le skill n'écrase jamais.
   \item[Commit refusé : branche] Créez une branche \cmd{feat/SPEC-NNN-slug} ou \cmd{fix/slug} ; les hooks interdisent \cmd{main}.
-  \item[Commit refusé : spec non validée] La spec \cmd{SPEC-NNN} nommée dans la branche n'est pas \emph{Validée}. Faites-la valider par un humain, ou, pour un commit de documentation seule, ne touchez que \cmd{docs/} et les fichiers \cmd{.md}.
-  \item[Cycle court refusé] \cmd{check-rapide-eligible.sh} a détecté un dépassement (taille, fichiers, dépendances, migration) : passez par \cmd{forge-spec}.
+  \item[Commit refusé : spec non validée] La spec \cmd{SPEC-NNN} nommée dans la branche n'est pas \emph{Validée}. Faites-la valider par un humain ou, pour un commit de documentation seule, ne touchez que \cmd{docs/} et les fichiers \cmd{.md}.
+  \item[Spec refusée alors qu'elle est « Validée »] Il manque un nom ou une date sur une ligne \cmd{Validé par}, ou un placeholder \cmd{[Nom, date]} subsiste.
+  \item[Commit refusé : message] Le message doit suivre \cmd{type(portée): sujet}, 72 caractères au plus sur la première ligne.
+  \item[Cycle court refusé] \cmd{check-rapide-eligible.sh} a détecté un dépassement (taille, fichiers, dépendances, migration) : passez par \skill{forge-spec}.
   \item[La barre reste à 0/7] Le livrable n'est pas au statut \emph{Validée} (ADR : \emph{Acceptée}) ; vérifier la ligne \cmd{Statut} en tête du fichier.
   \item[Terme banni détecté] Remplacez le synonyme par le nom technique du glossaire ; n'affaiblissez pas le glossaire pour faire passer le contrôle.
+  \item[Le contrat est refusé] Une opération cite une spec absente ou non validée : validez la spec, ou corrigez le \cmd{summary}.
 \end{description}

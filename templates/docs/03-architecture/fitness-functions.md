@@ -8,7 +8,7 @@ Contrôles automatiques exécutés en CI pour empêcher l'architecture de dériv
 | FF-02 | ENF-01 | P95 < 2 s sur scénario de référence | k6 | Non (alerte) |
 | FF-03 | ENF-05 | 0 vulnérabilité critique dans les dépendances | Trivy / pip-audit / npm audit | Oui |
 | FF-04 | Contrats | L'implémentation respecte `api/openapi.yaml` | Schemathesis | Oui |
-| FF-05 | Glossaire | Pas de terme banni dans le code | Script grep sur la liste des synonymes | Non |
+| FF-05 | Glossaire | Pas de terme banni dans le code | Script `check-glossary-terms.sh` sur la liste des synonymes (identifiants camelCase et snake_case compris) | Non |
 
 ## Exemple — FF-01 avec import-linter (Python / FastAPI)
 ```ini

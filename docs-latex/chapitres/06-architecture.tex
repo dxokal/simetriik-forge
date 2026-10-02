@@ -1,0 +1,175 @@
+\chapter{Décider l'architecture}\label{ch:archi}
+
+\begin{objectifs}[Objectifs --- étape 3, \texttt{forge-architecture}]
+\begin{itemize}
+  \item reconnaître une décision structurante et la consigner dans un ADR ;
+  \item comparer des options \emph{chiffrées} en FCFA, pas des préférences ;
+  \item tenir le modèle C4 en code ;
+  \item protéger la décision contre la dérive grâce à une fitness function en CI.
+\end{itemize}
+\end{objectifs}
+
+\begin{situation}[Sur le terrain : \sika{}]
+Six mois plus tard, un nouveau développeur demande : \q{Pourquoi n'a-t-on pas fait une application mobile ?}
+Si la réponse tient dans \emph{\q{je crois qu'on en avait parlé}}, l'équipe va rediscuter la décision, l'inverser par
+inadvertance, ou la refaire pour rien. Un ADR répond en une page, avec les chiffres de l'époque.
+\end{situation}
+
+\section{Le concept : décider une fois, par écrit}
+\begin{concept}[ADR --- Architecture Decision Record]
+Une fiche courte qui consigne \emph{une} décision structurante : le contexte, les options envisagées avec
+leur coût, la décision, ses conséquences. Son statut passe de \emph{Proposée} à \emph{Acceptée} sous la
+responsabilité d'un humain. Un ADR n'est pas modifié après coup : une décision nouvelle \emph{remplace} l'ancienne
+(statut \emph{Remplacée par ADR-XXXX}).
+\end{concept}
+
+Sont structurantes : la \textbf{stack technique} (langage et framework du back, du front, du mobile), la base de
+données, l'hébergement, toute dépendance majeure, le découpage en modules.
+
+\section{Pas à pas avec \texttt{forge-architecture}}
+\begin{enumerate}
+  \item Le skill lit les ADR acceptés, le C4 et la context map.
+  \item Pour chaque décision, il copie \cmd{adr/0000-template.md} vers \cmd{adr/NNNN-slug.md} et la remplit avec des options chiffrées : coût en FCFA, compétences locales, capacité d'exploitation du client.
+  \item Il ne contredit pas l'ADR-0001 (monolithe modulaire) ; en sortir exige un nouvel ADR qui le remplace.
+  \item Il tient le C4 en code ; les technologies \cmd{[STACK : à fixer par ADR]} sont remplacées par celles de l'ADR de stack.
+  \item Chaque ADR à risque de dérive reçoit une fitness function \cmd{FF-NN}.
+\end{enumerate}
+
+\section{L'ADR-0001, fourni : le monolithe modulaire}
+Le dossier de conception embarque déjà cette décision, adaptée aux petites équipes et aux clients sans équipe d'exploitation.
+Un seul déployable ; \emph{un module par bounded context} ; les modules ne communiquent que par interfaces publiques
+ou événements internes ; une base PostgreSQL, un schéma par module.
+
+\begin{figure}[H]
+\centering
+\resizebox{.95\linewidth}{!}{%
+\begin{tikzpicture}[
+  box/.style={draw,rounded corners=3pt,align=center,font=\sffamily\small},
+  mod/.style={box,fill=accentl!18,draw=accentl,minimum width=2.9cm,minimum height=10mm},
+  ext/.style={box,fill=grey!15,draw=grey,minimum width=3cm,minimum height=10mm},
+  ar/.style={-{Stealth},thick,grey}]
+  \node[box,draw=accent,minimum width=11.4cm,minimum height=4.2cm,fill=accent!4] (api) at (0,0) {};
+  \node[font=\sffamily\bfseries\small,text=accent,anchor=north west] at ([xshift=2mm,yshift=-1mm]api.north west) {API --- un seul déployable};
+  \node[mod] (c) at (-3.7,0.2) {Cotisation\\{\scriptsize cœur}};
+  \node[mod] (n) at (-0.6,0.2) {Notifications};
+  \node[mod] (a) at (2.5,0.2) {ACL Paiement};
+  \node[font=\sffamily\scriptsize,text=brick] at (-2.15,-1.2) {pas d'import direct entre modules (FF-01)};
+  \node[box,fill=codebg,draw=accent!50,minimum width=11cm,minimum height=7mm] (db) at (0,-3.1) {PostgreSQL --- un schéma par module};
+  \node[ext] (mm) at (6.8,0.2) {Agrégateur\\Mobile Money};
+  \node[ext] (sms) at (1.2,3.1) {Passerelle SMS};
+  \node[ext,minimum width=4.2cm] (pwa) at (-3.7,3.1) {PWA (membres, trésorières)};
+  \draw[ar] (a)--(mm); \draw[ar] (n.north)--(sms.south west); \draw[ar] (pwa)--(c);
+  \draw[ar] (api.south)--(db.north);
+\end{tikzpicture}}
+\caption{L'ADR-0001 appliqué à \sika{} : un déployable, un module par contexte.}
+\end{figure}
+
+\section{L'ADR de stack de \sika{}}
+\begin{code}
+\begin{Verbatim}
+# ADR-0002 — Python (FastAPI) + PostgreSQL pour l'API,
+#            PWA légère pour le front
+
+Statut : Acceptée · Décideurs : chef de projet, présidente
+
+## Contexte
+Téléphones d'entrée de gamme, data mobile coûteuse,
+connexions instables. Pas de DSI ; exploitation par Simetriik.
+
+## Options envisagées (chiffres fictifs)
+A. FastAPI + PWA
+   + équipe à l'aise, léger   − accès natif limité
+   Coût : 25 000 FCFA/mois d'hébergement
+B. NestJS + PWA
+   + un seul langage          − compétences à acquérir
+   Coût : 25 000 FCFA/mois
+C. Application native (Flutter)
+   + expérience native        − 2 binaires, store, lourd
+   Coût : 25 000 FCFA/mois + 150 000 FCFA/an (stores)
+
+## Décision
+Option A : une PWA s'installe sans store, charge peu de
+données et fonctionne hors ligne pour la consultation.
+
+## Conséquences
+- Négatives : pas de notifications push natives avant un
+  prochain ADR.
+- Fitness function associée : FF-01 (frontières des modules).
+\end{Verbatim}
+\end{code}
+
+\begin{piege}[Piège : un ADR de préférence]
+\q{Je préfère Python} n'est pas une option chiffrée. Un bon ADR répond à la question de la DSI cliente
+(ou ici de l'association) : combien cela coûte-t-il, qui peut l'exploiter, et que se passe-t-il si
+l'équipe change ?
+\end{piege}
+
+\section{Le modèle C4, en code}
+\begin{concept}[C4]
+Une documentation d'architecture en quatre niveaux de zoom : \emph{contexte}, \emph{conteneurs}, \emph{composants},
+\emph{code}. On la décrit en code (Structurizr DSL) plutôt qu'en image : le modèle est versionné, relu en revue et ne
+vieillit pas en silence. Les images en sont générées.
+\end{concept}
+\begin{code}
+\begin{Verbatim}
+api = container "API (monolithe modulaire)" "Un module par bounded context" "Python / FastAPI" {
+    contribution = component "Module Cotisation" "Contexte cœur"
+    notification = component "Module Notifications" "Contexte support"
+    paymentAcl   = component "ACL Paiement" "Couche anticorruption"
+}
+paymentAcl -> payment "Initie et vérifie les cotisations" "HTTPS + webhooks"
+\end{Verbatim}
+\end{code}
+
+\section{Fitness functions : l'architecture sous surveillance}
+\begin{concept}[Fitness function]
+Un contrôle automatique, exécuté en intégration continue, qui échoue quand une propriété d'architecture est
+violée. Chaque ADR à risque de dérive en reçoit une, avec un identifiant \cmd{FF-NN}, un outil et un caractère bloquant ou non.
+\end{concept}
+\noindent\begin{tabularx}{\linewidth}{llXl}
+\toprule
+\textbf{Id} & \textbf{Protège} & \textbf{Règle} & \textbf{Bloquant} \\ \midrule
+FF-01 & ADR-0001 & aucun import direct entre modules de contextes différents & oui \\
+FF-02 & ENF-01 & P95 $<$ 2\,s sur le scénario de référence & non (alerte) \\
+FF-03 & ENF-05 & aucune vulnérabilité critique dans les dépendances & oui \\
+FF-04 & contrats & l'implémentation respecte \cmd{api/openapi.yaml} & oui \\
+FF-05 & glossaire & aucun terme banni dans le code & non \\
+\bottomrule
+\end{tabularx}
+FF-01 et FF-03 se branchent en CI dès le premier lot. Pour \sika{} en Python, FF-01 s'écrit avec \cmd{import-linter} :
+\begin{code}
+\begin{Verbatim}
+[importlinter]
+root_package = app
+
+[importlinter:contract:bounded-contexts]
+name = Les modules ne s'importent pas entre eux
+type = independence
+modules =
+    app.contribution
+    app.notification
+    app.payment_acl
+\end{Verbatim}
+\end{code}
+\textbf{Garde-fou :} \cmd{scripts/check-adr-present.sh docs/03-architecture/adr 2}. Le second argument est le nombre minimum d'ADR \emph{Acceptée} (2 : l'ADR-0001 fourni et l'ADR de stack ; par défaut, 1). Le script
+il ne lit pas la qualité de l'argumentation.
+
+\begin{vousjouez}[À vous de jouer]
+Listez trois décisions de votre projet qu'un nouveau venu pourrait remettre en cause (stack, hébergement, base de données\dots).
+Pour la plus structurante, remplissez un ADR avec trois options \emph{chiffrées}. Quelle fitness function protégerait la décision ?
+\end{vousjouez}
+
+\begin{retenir}[À retenir]
+\begin{itemize}
+  \item Une décision structurante = un ADR, avec des options chiffrées ; une nouvelle décision remplace l'ancienne.
+  \item Le C4 vit en code, pas en image seule.
+  \item Une décision qui peut dériver reçoit une fitness function en CI.
+\end{itemize}
+\end{retenir}
+\source{skills/forge-architecture/SKILL.md, templates/docs/03-architecture}
+
+\begin{acquis}
+  \item Citez trois décisions qui exigent un ADR.
+  \item Que faut-il pour sortir du monolithe modulaire ?
+  \item Quelle fitness function empêche deux contextes de s'importer directement ?
+\end{acquis}

@@ -1,0 +1,95 @@
+\chapter{La recette}\label{ch:recette}
+
+\begin{objectifs}[Objectifs --- étape 5, \texttt{forge-recette}]
+\begin{itemize}
+  \item dériver le plan de recette des scénarios Gherkin ;
+  \item vérifier les critères d'entrée avant de commencer ;
+  \item classer les anomalies et gérer leurs délais ;
+  \item préparer un procès-verbal que le client, et lui seul, signe.
+\end{itemize}
+\end{objectifs}
+
+\begin{situation}[Sur le terrain : \sika{}]
+Trois trésorières de groupe testent \sika{} sur leur propre téléphone, avec des données anonymisées. L'une d'elles
+constate qu'une cotisation confirmée par l'opérateur n'apparaît pas dans le solde du pot. Est-ce grave ?
+Réponse du tableau de classification : oui, \emph{bloquante}, car elle empêche le processus métier sans contournement.
+\end{situation}
+
+\section{Le concept : la recette est celle du client}
+\begin{concept}[Recette]
+La phase où le client vérifie, scénario par scénario, que le produit fait ce qui a été validé. Elle ne se confond pas avec
+les tests de l'équipe : elle se tient dans un environnement de préproduction, avec des testeurs métier, et se clôt par un
+\textbf{procès-verbal (PV)} que le client signe.
+\end{concept}
+
+\section{Pas à pas avec \texttt{forge-recette}}
+\begin{enumerate}
+  \item Le skill lit le plan de recette et chaque \cmd{.feature} des specs du lot.
+  \item \textbf{Un scénario Gherkin = une ligne} de la table des scénarios (identifiant, spec, scénario, résultat attendu). Les colonnes \emph{Obtenu}, \emph{Statut}, \emph{Testeur} et \emph{Date} restent vides pour les testeurs.
+  \item Il vérifie les \emph{critères d'entrée}.
+  \item Il suit les anomalies ; il ne reclasse jamais une anomalie sans l'avis du responsable recette client.
+  \item Il prépare le PV ; il ne déclare jamais la recette réussie.
+\end{enumerate}
+
+\begin{concept}[Critères d'entrée]
+Trois conditions avant de commencer : les specs du lot sont \emph{Validée} ; les scénarios automatisés sont verts en CI ;
+un jeu de données anonymisé est chargé. Sinon, la recette ne démarre pas.
+\end{concept}
+
+\section{Anomalies et critères de sortie}
+\noindent\begin{tabularx}{\linewidth}{llX}
+\toprule
+\textbf{Niveau} & \textbf{Délai} & \textbf{Définition} \\ \midrule
+Bloquante & 48\,h ouvrées & empêche un processus métier sans contournement \\
+Majeure & 5 jours ouvrés & processus dégradé, contournement possible \\
+Mineure & lot suivant & gêne ergonomique ou cosmétique \\
+\bottomrule
+\end{tabularx}
+\textbf{Critères de sortie :} aucune anomalie bloquante, un nombre borné de majeures avec plan de correction, exigences non fonctionnelles critiques vérifiées.
+
+\subsection*{Un extrait du plan de \sika{}}
+\noindent\begin{tabularx}{\linewidth}{lllXl}
+\toprule
+\textbf{Id} & \textbf{Spec} & \textbf{Scénario} & \textbf{Résultat attendu} & \textbf{Statut} \\ \midrule
+SC-01 & SPEC-001 & Cotisation au montant du groupe & cotisation initiée auprès de l'opérateur & OK \\
+SC-02 & SPEC-001 & Confirmation par l'opérateur & solde du pot $+$\FCFA{5\,000}, SMS reçu & \textcolor{brick}{KO} \\
+SC-03 & SPEC-001 & Seconde cotisation dans le tour & refusée : \q{Déjà cotisé} & OK \\
+\bottomrule
+\end{tabularx}
+
+\begin{piege}[Piège : corriger à la hâte]
+SC-02 échoue. Remplacer l'affichage du solde ferait disparaître le symptôme sans traiter la cause : ici, un webhook de l'opérateur
+perdu. Le skill impose la même discipline qu'ailleurs : \emph{reproduire}, poser des hypothèses sur la cause racine, corriger
+le minimum via \skill{forge-implemente}, rejouer le scénario. La cause racine retenue : aucune réconciliation périodique des
+statuts auprès de l'opérateur. La correction : un rattrapage qui interroge l'opérateur sur les cotisations \q{initiées}.
+\end{piege}
+
+\section{Le procès-verbal}
+\begin{code}
+\begin{Verbatim}
+Lot : 1 · Date : [JJ/MM/AAAA] · Décision : [ ] Acceptée [ ] Acceptée avec réserves [ ] Refusée
+Réserves :
+Signatures : Client ____________ Simetriik Solutions ____________
+\end{Verbatim}
+\end{code}
+Le PV est la porte d'entrée de la production (chapitre~\ref{ch:prod}). Aucune tâche, aucun assistant ne signe à la place du client.
+
+\begin{vousjouez}[À vous de jouer]
+Prenez les scénarios de la spec de votre projet et transformez-les en lignes de plan de recette. Qui, chez votre client, jouera le
+rôle de responsable recette ? Et quelle anomalie classeriez-vous \emph{bloquante} dans votre contexte ? Écrivez-la.
+\end{vousjouez}
+
+\begin{retenir}[À retenir]
+\begin{itemize}
+  \item Un scénario Gherkin = une ligne du plan de recette.
+  \item Critères d'entrée avant de démarrer ; critères de sortie avant de conclure.
+  \item Le client classe les anomalies ; le client signe le PV.
+\end{itemize}
+\end{retenir}
+\source{skills/forge-recette/SKILL.md, templates/docs/05-recette}
+
+\begin{acquis}
+  \item Citez les trois critères d'entrée d'une recette.
+  \item Qui peut reclasser une anomalie ?
+  \item Que fait-on d'une anomalie bloquante découverte en recette ?
+\end{acquis}

@@ -1,0 +1,65 @@
+\chapter{S'entraîner avec \texttt{forge-apprendre}}\label{ch:apprendre}
+
+\begin{objectifs}[Objectifs]
+\begin{itemize}
+  \item suivre quatre leçons pratiques sur un cas fictif, avec un coach ;
+  \item mesurer votre progression sans fichier de suivi ;
+  \item transférer chaque leçon sur votre projet réel.
+\end{itemize}
+\end{objectifs}
+
+\begin{situation}[Sur le terrain : une nouvelle recrue]
+Une ingénieure rejoint l'équipe de \sika{}. Elle ne veut pas lire un manuel de bout en bout : elle veut essayer. Le skill
+\skill{forge-apprendre} lui donne un coach et un terrain d'essai.
+\end{situation}
+
+\section{Un coach, pas un exécutant}
+Le skill \emph{explique}, \emph{relit} et donne des indices à la demande ; c'est \textbf{vous} qui écrivez chaque
+livrable. Les exercices portent sur un autre cas fictif que \sika{}, \textbf{PayBoutique} (une boutique en ligne béninoise
+qui encaisse des paiements MTN MoMo et Moov Money), et vivent dans \cmd{apprentissage/}, jamais dans \cmd{docs/} : le vrai dossier
+de conception reste intact.
+
+\begin{concept}[Apprentissage par la pratique]
+Chaque leçon suit le même schéma : le \emph{concept} en quelques lignes, le \emph{pourquoi}, puis un \emph{exercice} vérifié par un garde-fou. À la fin,
+vous refaites l'exercice sur votre projet avec le skill de l'étape.
+\end{concept}
+
+\section{Les quatre leçons}
+\noindent\begin{tabularx}{\linewidth}{lXX}
+\toprule
+\textbf{Leçon} & \textbf{Exercice} & \textbf{Vérification} \\ \midrule
+1 Impact map & objectif mesurable, acteur, tri de trois idées & mots-clés \emph{indicateur}, \emph{cible}, \emph{échéance} \\
+2 Langage & glossaire et code contenant un terme banni & \cmd{check-glossary-terms.sh} : KO puis OK \\
+3 Spec & règle de paiement avec trois cas & \cmd{check-spec-validated.sh} \\
+4 ADR & choix d'hébergement chiffré en FCFA & \cmd{check-adr-present.sh} \\
+\bottomrule
+\end{tabularx}
+
+\section{Suivre sa progression}
+\cmd{scripts/forge-lecons.sh} affiche par exemple \cmd{Leçons [██░░] 2/4 · prochaine : 03-spec}, calculé à partir de vos fichiers d'exercice : vous
+reprenez là où vous vous étiez arrêté, sans fichier de suivi.
+
+\begin{piege}[Piège : croire que le vert prouve la qualité]
+Les scripts ne vérifient que la présence et le statut, pas la qualité. La qualité se discute en relecture avec le coach. Les concepts
+sans leçon (bounded context, OpenAPI d'abord, fitness functions, recette) s'étudient à partir du skill correspondant.
+\end{piege}
+
+\begin{vousjouez}[À vous de jouer]
+Lancez \skill{forge-apprendre}, faites la leçon~1, puis refaites immédiatement l'exercice sur votre projet avec \skill{forge-cadrage}.
+Qu'est-ce qui était différent quand les chiffres étaient les vôtres ?
+\end{vousjouez}
+
+\begin{retenir}[À retenir]
+\begin{itemize}
+  \item Le coach explique ; vous écrivez.
+  \item Quatre leçons : impact map, langage, spec, ADR.
+  \item Après chaque leçon, transférez sur votre projet avec le skill de l'étape.
+\end{itemize}
+\end{retenir}
+\source{skills/forge-apprendre/SKILL.md et lecons/}
+
+\begin{acquis}
+  \item Où vivent les exercices, et pourquoi pas dans \cmd{docs/} ?
+  \item Que ne vérifie \emph{pas} \cmd{forge-lecons.sh} ?
+  \item Quelle leçon se rattache à quel skill d'étape ?
+\end{acquis}

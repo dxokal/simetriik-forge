@@ -1,0 +1,102 @@
+\chapter{Le cycle court}\label{ch:rapide}
+
+\begin{objectifs}[Objectifs --- \texttt{forge-rapide}]
+\begin{itemize}
+  \item décider si une demande relève du cycle court ou du cycle complet ;
+  \item rédiger une mini-spec d'une seule règle ;
+  \item comprendre le garde-fou qui empêche le cycle court de devenir une porte dérobée.
+\end{itemize}
+\end{objectifs}
+
+\begin{situation}[Sur le terrain : \sika{}]
+Une trésorière demande : \q{Je voudrais voir le montant total du pot sur l'écran du tour.} Parcourir sept étapes pour
+afficher une somme serait absurde. Mais afficher une somme n'est pas \q{juste} un écran : quelle somme ? les
+cotisations initiées comptent-elles ? Le cycle court garde la rigueur et allège la cérémonie.
+\end{situation}
+
+\section{Quand l'utiliser : six questions}
+\begin{figure}[H]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  q/.style={draw=accent,fill=accent!6,rounded corners=3pt,align=center,font=\sffamily\small,text width=11cm,minimum height=8mm},
+  no/.style={draw=leaf,fill=leaf!12,rounded corners=3pt,align=center,font=\sffamily\small\bfseries,minimum height=9mm,text width=11cm},
+  yes/.style={draw=brick,fill=brick!10,rounded corners=3pt,align=center,font=\sffamily\small\bfseries,text width=4.2cm,minimum height=26mm},
+  ar/.style={-{Stealth},thick,grey}]
+  \node[q] (q) at (0,0) {Nouveau bounded context ? Nouvelle dépendance ? Migration de données ?\\Rupture du contrat OpenAPI ? Plus d'une règle métier ? Décision structurante (ADR) ?};
+  \node[no] (r) at (0,-2.2) {Six réponses « non » $\Rightarrow$ cycle court (\skill{forge-rapide})};
+  \node[yes] (y) at (8.3,-1) {Un seul « oui » $\Rightarrow$ cycle complet (\skill{forge-spec})};
+  \draw[ar] (q)--(r) node[midway,right,font=\sffamily\scriptsize]{tous non};
+  \draw[ar] (q.east)--++(.6,0)|-(y.west) node[pos=.2,above,font=\sffamily\scriptsize]{au moins un oui};
+\end{tikzpicture}}
+\caption{L'éligibilité au cycle court.}
+\end{figure}
+
+\section{Déroulement}
+\begin{enumerate}
+  \item \textbf{Mini-spec.} Copiez \cmd{_TEMPLATE-spec-rapide.md} en \cmd{SPEC-NNN.md} : une règle (avec sa source), un scénario, l'\cmd{operationId} si l'API change, taille \texttt{S}. Seul un humain la passe à \emph{Validée}.
+  \item \textbf{Réalisation.} Branche \cmd{feat/SPEC-NNN-slug}, contrat si l'API change, test d'abord, puis code.
+  \item \textbf{Vérifications.} Linter, tests, \cmd{check-glossary-terms.sh}, et \cmd{check-rapide-eligible.sh}.
+\end{enumerate}
+
+\subsection*{La mini-spec de \sika{}}
+\begin{code}
+\begin{Verbatim}
+# SPEC-002 — Afficher le solde du pot
+
+Statut : Validée · Taille : S · Contexte : Cotisation
+Objectif lié : O1
+
+## Règle
+Le solde du pot est la somme des cotisations confirmées du tour.
+Source : atelier Event Storming, politique « dès qu'une
+cotisation est confirmée ».
+
+## Scénario
+Scénario: Solde du pot
+  Étant donné deux cotisations confirmées de 5000 FCFA
+  Et une cotisation initiée
+  Quand la trésorière consulte le pot
+  Alors le solde affiché est de 10000 FCFA
+
+## Interface (si l'API change)
+operationId : getPotBalance
+\end{Verbatim}
+\end{code}
+La règle est la même que R2 de la SPEC-001, vue autrement : le solde ne compte que les cotisations \emph{confirmées}. Le cas du
+doute (initiée, non confirmée) est dans le scénario lui-même.
+
+\section{Le garde-fou d'éligibilité}
+Pour que le cycle court ne devienne pas une porte dérobée, \cmd{scripts/check-rapide-eligible.sh docs/02-specs/SPEC-NNN.md} échoue si :
+\begin{itemize}
+  \item la spec n'est pas de taille \texttt{S} ;
+  \item plus de 8 fichiers sont modifiés par rapport à \cmd{main} ;
+  \item un manifeste de dépendances change (\cmd{package.json}, \cmd{pyproject.toml}, \cmd{go.mod}\dots) ;
+  \item une migration ou un fichier \cmd{.sql} apparaît.
+\end{itemize}
+En cas d'échec, le travail a dépassé le cadre : basculez vers le cycle complet.
+
+\begin{piege}[Piège : le faux refus vaut mieux que l'oubli]
+Une modification de \cmd{pyproject.toml} est refusée même sans nouvelle dépendance (une simple version de l'outil, par
+exemple). Le script préfère un faux refus à une dépendance oubliée. Le seuil de 8 fichiers est arbitraire : réglez-le à l'usage.
+\end{piege}
+
+\begin{vousjouez}[À vous de jouer]
+Prenez trois demandes récentes de votre projet. Pour chacune, répondez aux six questions : laquelle aurait pu être traitée en
+cycle court ? Rédigez la mini-spec de celle-là.
+\end{vousjouez}
+
+\begin{retenir}[À retenir]
+\begin{itemize}
+  \item Cycle court = une règle, taille \texttt{S}, ni dépendance ni migration ni rupture de contrat.
+  \item La mini-spec reste obligatoire et validée par un humain.
+  \item Le script d'éligibilité vous ramène au cycle complet quand il le faut.
+\end{itemize}
+\end{retenir}
+\source{skills/forge-rapide/SKILL.md, scripts/check-rapide-eligible.sh}
+
+\begin{acquis}
+  \item Citez trois raisons de refuser le cycle court.
+  \item La mini-spec peut-elle être validée par l'assistant ?
+  \item Que signifie un échec de \cmd{check-rapide-eligible.sh} ?
+\end{acquis}
