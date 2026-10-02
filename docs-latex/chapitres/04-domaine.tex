@@ -97,7 +97,7 @@ src/a.ts:1:class Payment { amountXof: number }
 KO: terme banni « payment »
 \end{Verbatim}
 \end{code}
-Après correction en \cmd{Contribution} :
+Le contrôle voit aussi les synonymes cachés dans un identifiant : \cmd{PaymentService}, \cmd{payment_id} ou \cmd{getPaymentStatus} sont refusés, mais pas \cmd{Paymentless}, car le mot doit être entier. Après correction en \cmd{Contribution} :
 \begin{code}
 \begin{Verbatim}
 OK: aucun terme banni
@@ -105,8 +105,9 @@ OK: aucun terme banni
 \end{code}
 
 \begin{piege}[Piège : affaiblir le glossaire pour faire passer le contrôle]
+
 Quand le script crie, la mauvaise réponse est de retirer le synonyme de la liste. La bonne :
-renommer dans le code. Le glossaire est un contrat avec le métier.
+renommer dans le code. Le glossaire est un contrat avec le métier. Pour un vrai faux positif (par exemple \cmd{HttpClient} quand \emph{client} est banni), ajoutez le commentaire \cmd{glossary-ignore} sur la ligne : l'exception est alors visible en revue.
 \end{piege}
 
 \section{Sous-domaines et context map}

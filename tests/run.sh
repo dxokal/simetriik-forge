@@ -24,6 +24,11 @@ echo 'class Application {}' > $F/code-ok/a.ts
 echo 'class Dossier {}'     > $F/code-bad/a.ts
 ok scripts/check-glossary-terms.sh $T/01-domaine/glossaire.md $F/code-ok
 ko scripts/check-glossary-terms.sh $T/01-domaine/glossaire.md $F/code-bad
+mkdir -p $F/code-camel $F/code-clean
+printf 'class DossierService {}\n' > $F/code-camel/a.ts; printf 'const client_id = 1\n' > $F/code-camel/b.ts; printf 'getClientName()\n' > $F/code-camel/c.ts
+printf 'class Clientele {}\nclass HttpClient {} // glossary-ignore\n' > $F/code-clean/a.ts
+for f in a b c; do mkdir -p $F/code-camel-$f && cp $F/code-camel/$f.ts $F/code-camel-$f/; ko scripts/check-glossary-terms.sh $T/01-domaine/glossaire.md $F/code-camel-$f; done
+ok scripts/check-glossary-terms.sh $T/01-domaine/glossaire.md $F/code-clean
 mkdir -p $F/specs && cp $F/spec-ok.md $F/specs/SPEC-001.md
 printf 'paths:\n  /a:\n    post:\n      operationId: op1\n      summary: Soumettre (SPEC-001)\n' > $F/api-ok.yaml
 printf 'paths:\n  /a:\n    post:\n      operationId: op1\n      summary: Sans spec\n' > $F/api-nospec.yaml
