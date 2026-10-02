@@ -34,6 +34,10 @@ ko scripts/check-openapi-first.sh $F/api-ghost.yaml $F/specs
 ok scripts/check-adr-present.sh $T/03-architecture/adr
 mkdir -p $F/adr-empty && cp $T/03-architecture/adr/0000-template.md $F/adr-empty/
 ko scripts/check-adr-present.sh $F/adr-empty
+ok scripts/check-adr-present.sh $T/03-architecture/adr 1
+ko scripts/check-adr-present.sh $T/03-architecture/adr 2
+mkdir -p $F/adr-two && cp $T/03-architecture/adr/0001-*.md $F/adr-two/ && sed 's/ADR-0001/ADR-0002/' $T/03-architecture/adr/0001-*.md > $F/adr-two/0002-stack.md
+ok scripts/check-adr-present.sh $F/adr-two 2
 ok scripts/check-branch.sh feat/x
 ok scripts/check-branch.sh fix/y
 ko scripts/check-branch.sh main
