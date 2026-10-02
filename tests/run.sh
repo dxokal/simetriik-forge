@@ -66,6 +66,16 @@ G=$(mktemp -d); R=$PWD; ( cd $G && git init -q -b main && git config user.email 
   rm -r db; sed -i 's/| S |/| M |/' docs/02-specs/SPEC-001.md; $R/scripts/check-rapide-eligible.sh docs/02-specs/SPEC-001.md >/dev/null 2>&1 && { echo "FAIL rapide: taille M"; exit 1; }
   sed -i 's/| M |/| S |/' docs/02-specs/SPEC-001.md; for i in 1 2 3 4 5 6 7 8 9; do echo $i > src/f$i.ts; done; $R/scripts/check-rapide-eligible.sh docs/02-specs/SPEC-001.md >/dev/null 2>&1 && { echo "FAIL rapide: trop de fichiers"; exit 1; }
   exit 0 ) || fail=1; rm -rf $G
+G=$(mktemp -d); R=$PWD; ( cd $G && git init -q -b main && git config user.email t@t && git config user.name t && mkdir -p docs/02-specs docs/03-architecture/adr src scripts && cp $R/scripts/check-*.sh scripts/
+  cp $R/$F/spec-draft.md docs/02-specs/SPEC-001.md; cp $R/$F/adr-two/*.md docs/03-architecture/adr/; echo a > src/a.ts; git add . && git commit -qm "chore: init"
+  export GITHUB_HEAD_REF=feat/SPEC-001-x; git switch -q -c feat/SPEC-001-x; echo b > src/b.ts; git add . && git commit -qm "feat(api): add b"
+  scripts/check-ci.sh main >/dev/null 2>&1 && { echo "FAIL ci: spec brouillon + code"; exit 1; }
+  cp $R/$F/spec-ok.md docs/02-specs/SPEC-001.md; git add . && git commit -qm "docs: validate SPEC-001"
+  scripts/check-ci.sh main >/dev/null 2>&1 || { echo "FAIL ci: spec validee"; exit 1; }
+  echo c > src/c.ts; git add . && git commit -qm "added stuff"
+  scripts/check-ci.sh main >/dev/null 2>&1 && { echo "FAIL ci: message non conforme"; exit 1; }
+  GITHUB_HEAD_REF=main scripts/check-ci.sh main >/dev/null 2>&1 && { echo "FAIL ci: branche main"; exit 1; }
+  exit 0 ) || fail=1; rm -rf $G
 L=$F/lecons; rm -rf $L; mkdir -p $L/apprentissage/code $L/apprentissage/adr
 [ "$(scripts/forge-lecons.sh $L)" = "Leçons [░░░░] 0/4 · prochaine : 01-impact-map" ] || { echo "FAIL lecons 0/4"; fail=1; }
 printf 'indicateur cible échéance\n' > $L/apprentissage/impact-map.md; cp $F/spec-ok.md $L/apprentissage/SPEC-001.md
